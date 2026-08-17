@@ -1,0 +1,609 @@
+
+<div class="tracking-page">
+
+  <!-- ================================================= -->
+  <!-- SEARCH SECTION -->
+  <!-- ================================================= -->
+
+  <section class="search-section">
+
+    <div class="container">
+
+      <div class="search-header">
+
+      </div>
+
+
+      <!-- SEARCH BOX -->
+
+      <div class="search-box">
+
+        <!-- SEARCH TYPE -->
+
+        <div class="search-type">
+
+          <button
+            type="button"
+            class="search-type-btn"
+            (click)="toggleSearchDropdown()"
+          >
+
+            <i
+              [class]="
+                searchType === 'awb'
+                  ? 'fa-solid fa-box'
+                  : 'fa-solid fa-file-lines'
+              "
+            ></i>
+
+            <span>
+              {{
+                searchType === 'awb'
+                  ? 'AWB Number'
+                  : 'Shipper Reference'
+              }}
+            </span>
+
+            <i class="fa-solid fa-chevron-down"></i>
+
+          </button>
+
+
+          <!-- DROPDOWN -->
+
+          <div
+            class="search-dropdown"
+            *ngIf="isSearchDropdownOpen"
+          >
+
+            <button
+              type="button"
+              (click)="selectSearchType('awb')"
+              [class.active]="searchType === 'awb'"
+            >
+
+              <i class="fa-solid fa-box"></i>
+
+              <span>
+                AWB Number
+              </span>
+
+            </button>
+
+
+            <button
+              type="button"
+              (click)="selectSearchType('shipperReference')"
+              [class.active]="searchType === 'shipperReference'"
+            >
+
+              <i class="fa-solid fa-file-lines"></i>
+
+              <span>
+                Shipper Reference
+              </span>
+
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <!-- INPUT -->
+
+        <div class="search-input">
+
+          <i class="fa-solid fa-magnifying-glass"></i>
+
+          <input
+            type="text"
+            [(ngModel)]="searchValue"
+            [placeholder]="
+              searchType === 'awb'
+                ? 'Enter AWB number'
+                : 'Enter shipper reference'
+            "
+            (keyup.enter)="search()"
+          />
+
+        </div>
+
+
+        <!-- BUTTON -->
+
+        <button
+          type="button"
+          class="track-btn"
+          (click)="search()"
+        >
+
+          <i class="fa-solid fa-magnifying-glass"></i>
+
+          Track
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
+  <section
+  class="not-found-section"
+  *ngIf="isNotFound()"
+>
+  <div class="container">
+
+    <div class="not-found-card">
+
+      <div class="not-found-icon">
+        <i class="fa-solid fa-box-open"></i>
+      </div>
+
+      <h3>
+        Shipment Not Found
+      </h3>
+
+      <p>
+        No shipment was found for AWB
+        <strong>{{ searchValue }}</strong>
+      </p>
+
+      <span>
+        Please check the AWB number and try again.
+      </span>
+
+    </div>
+
+  </div>
+</section>
+
+
+  <!-- ================================================= -->
+  <!-- SEARCH RESULT -->
+  <!-- ================================================= -->
+
+  <section
+    class="results-section"
+    *ngIf="trackInfoo() as result"
+  >
+
+    <div class="container">
+
+
+      <!-- ================================================= -->
+      <!-- SHIPMENT HEADER -->
+      <!-- ================================================= -->
+
+      <div class="shipment-card">
+
+        <div class="shipment-left">
+
+          <div class="shipment-icon">
+
+            <i class="fa-solid fa-box"></i>
+
+          </div>
+
+
+          <div>
+
+            <span class="label">
+              AIR WAYBILL
+            </span>
+
+            <h2>
+              {{ result.TrackInfo[0].ShipmentInformation.AWBNo }}
+            </h2>
+
+            <span class="account">
+              Account:
+              {{ result.TrackInfo[0].ShipmentInformation.AccountNo }}
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <!-- CURRENT STATUS -->
+
+        <div
+          class="current-status"
+          *ngIf="trackingList()?.length"
+        >
+
+          <span class="label">
+            CURRENT STATUS
+          </span>
+
+          <div
+            class="current-status-badge"
+            [ngClass]="
+              getStatusClass(
+                trackingList()![0].Status
+              )
+            "
+          >
+
+            <i
+              [class]="
+                getStatusIcon(
+                  trackingList()![0].Status
+                )
+              "
+            ></i>
+
+            {{
+              getStatusLabel(
+                trackingList()![0].Status
+              )
+            }}
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- ================================================= -->
+      <!-- ROUTE -->
+      <!-- ================================================= -->
+
+      <div class="route-card">
+
+        <div class="route-location">
+
+          <span>
+            FROM
+          </span>
+
+          <strong>
+            {{ result.TrackInfo[0].ShipmentInformation.Origin }}
+          </strong>
+
+        </div>
+
+
+        <div class="route-middle">
+
+          <div class="route-line"></div>
+
+          <div class="route-plane">
+
+            <i class="fa-solid fa-plane"></i>
+
+          </div>
+
+          <div class="route-line"></div>
+
+        </div>
+
+
+        <div class="route-location destination">
+
+          <span>
+            TO
+          </span>
+
+          <strong>
+            {{ result.TrackInfo[0].ShipmentInformation.Destination }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <!-- ================================================= -->
+      <!-- SHIPMENT INFO -->
+      <!-- ================================================= -->
+
+      <div class="shipment-info-grid">
+
+
+        <!-- SENDER -->
+
+        <div class="info-box">
+
+          <div class="info-icon">
+
+            <i class="fa-solid fa-user"></i>
+
+          </div>
+
+          <div>
+
+            <span>
+              Sender
+            </span>
+
+            <strong>
+              {{ result.TrackInfo[0].ShipmentInformation.Sender }}
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <!-- RECEIVER -->
+
+        <div class="info-box">
+
+          <div class="info-icon">
+
+            <i class="fa-solid fa-user-check"></i>
+
+          </div>
+
+          <div>
+
+            <span>
+              Receiver
+            </span>
+
+            <strong>
+              {{ result.TrackInfo[0].ShipmentInformation.Receiver }}
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <!-- WEIGHT -->
+
+        <div class="info-box">
+
+          <div class="info-icon">
+
+            <i class="fa-solid fa-weight-hanging"></i>
+
+          </div>
+
+          <div>
+
+            <span>
+              Weight
+            </span>
+
+            <strong>
+              {{ result.TrackInfo[0].ShipmentInformation.Weight }}
+              KG
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <!-- PIECES -->
+
+        <div class="info-box">
+
+          <div class="info-icon">
+
+            <i class="fa-solid fa-boxes-stacked"></i>
+
+          </div>
+
+          <div>
+
+            <span>
+              Pieces
+            </span>
+
+            <strong>
+              {{ result.TrackInfo[0].ShipmentInformation.Pcs }}
+            </strong>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- ================================================= -->
+      <!-- TRACKING -->
+      <!-- ================================================= -->
+
+      <div class="tracking-card">
+
+        <div class="tracking-header">
+
+          <div>
+
+            <span class="section-label">
+              TRACKING HISTORY
+            </span>
+
+            <h3>
+              Shipment Updates
+            </h3>
+
+          </div>
+
+
+          <div class="events-count">
+
+            {{ trackingList()?.length || 0 }}
+
+            Events
+
+          </div>
+
+        </div>
+
+
+        <!-- TIMELINE -->
+
+        <div class="timeline">
+
+          <div
+            class="timeline-item"
+            *ngFor="
+              let event of trackingList();
+              let i = index
+            "
+          >
+
+            <!-- CONNECTOR -->
+
+            <div
+              class="timeline-connector"
+              *ngIf="
+                i <
+                (trackingList()?.length || 0) - 1
+              "
+            ></div>
+
+
+            <!-- ICON -->
+
+            <div
+              class="timeline-icon"
+              [ngClass]="
+                getStatusClass(event.Status)
+              "
+            >
+
+              <i
+                [class]="
+                  getStatusIcon(event.Status)
+                "
+              ></i>
+
+            </div>
+
+
+            <!-- EVENT -->
+
+            <div class="timeline-event">
+
+              <div class="event-main">
+
+
+                <div class="event-info">
+
+                  <div class="event-title">
+
+                    {{ getStatusLabel(event.Status) }}
+
+                    <span class="status-code">
+
+                      {{ event.Status }}
+
+                    </span>
+
+                  </div>
+
+
+                  <div
+                    class="event-location"
+                    *ngIf="event.Location"
+                  >
+
+                    <i
+                      class="fa-solid fa-location-dot"
+                    ></i>
+
+                    {{ event.Location }}
+
+                  </div>
+
+                </div>
+
+
+                <div class="event-time">
+
+                  <strong>
+                    {{ event.TransTime }}
+                  </strong>
+
+                  <span>
+                    {{ event.Transdate }}
+                  </span>
+
+                </div>
+
+              </div>
+
+
+              <!-- REMARKS -->
+
+              <div
+                class="event-remarks"
+                *ngIf="event.Remarks"
+              >
+
+                {{ event.Remarks }}
+
+              </div>
+
+
+              <!-- DELIVERED TO -->
+
+              <div
+                class="delivered-to"
+                *ngIf="event.DeliveredTo"
+              >
+
+                <i
+                  class="fa-solid fa-user-check"
+                ></i>
+
+                {{ event.DeliveredTo }}
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ================================================= -->
+  <!-- EMPTY -->
+  <!-- ================================================= -->
+
+  <section
+    class="empty-state"
+    *ngIf="isEmpty()"
+  >
+
+    <div class="container">
+
+      <div class="empty-card">
+
+        <div class="empty-icon">
+
+          <i class="fa-solid fa-box-open"></i>
+
+        </div>
+
+        <h3>
+          Shipment Not Found
+        </h3>
+
+        <p>
+          We couldn't find any shipment matching your search.
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+
+</div>
