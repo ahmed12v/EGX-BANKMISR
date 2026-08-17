@@ -1,1 +1,64 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  /* Primary Colors */
+  --primary-color: #ea5b23;
+  --primary-color-dark: #d6491a;
+  --secondary-color: #182338;
+
+  --success-color: #22c55e;
+  --warning-color: #f59e0b;
+  --danger-color: #ef4444;
+  --info-color: #0ea5e9;
+
+  --background-color: #ffffff;
+  --surface-color: #f8fafc;
+  --input-background: #eef0fb;
+
+  --text-primary: #182338;
+  --text-secondary: #6b7280;
+  --text-placeholder: #9aa0b4;
+  --text-white: #ffffff;
+
+  --border-color: #e5e7eb;
+
+
+  /* Background Colors */
+  --background-color: #ffffff;
+  --input-background: #eef0fb;
+
+  /* Text Colors */
+  --text-primary: #182338;
+  --text-secondary: #6b7280;
+  --text-placeholder: #9aa0b4;
+  --text-white: #ffffff;
+
+  /* Border & Radius */
+  --border-radius: 10px;
+
+  /* Effects */
+  --focus-shadow: rgba(234, 91, 35, 0.15);
+
+  /* Hero Overlay */
+  --hero-overlay: linear-gradient(
+    115deg,
+    rgba(15, 22, 38, 0.88) 0%,
+    rgba(60, 35, 30, 0.72) 35%,
+    rgba(234, 91, 35, 0.55) 100%
+  );
+}
+input[readonly],
+textarea[readonly],
+select[readonly] {
+  background-color: #f5f7fa;
+  color: #2c3e50;
+  border: 1px solid #d5dbe3;
+  cursor: not-allowed;
+  opacity: 1; 
+  font-weight: 600;
+}
+
+input[readonly]:focus,
+textarea[readonly]:focus {
+  outline: none;
+  border-color: #d5dbe3;
+  box-shadow: none;
+}

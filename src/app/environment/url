@@ -1,0 +1,3 @@
+export enum environment  {
+  baseUrl = 'https://egxpress.me/IconnectSecure/IntegraOntrackService.svc',
+};

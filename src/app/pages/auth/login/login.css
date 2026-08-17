@@ -1,0 +1,273 @@
+/* ==========================================================================
+   EG Xpress - Login Page
+   ========================================================================== */
+
+.login-wrapper {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+}
+
+/* ---------------------------------------------------------------------
+   LEFT SIDE - HERO
+   --------------------------------------------------------------------- */
+
+.hero-side {
+  position: relative;
+  flex: 1 1 70%;
+  min-height: 100vh;
+  background-image: url('../../../../../public/HERO.png');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--hero-overlay);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  padding: 3rem 6rem;
+  max-width: 800px;
+}
+
+.hero-logo {
+    max-width: 190px;
+  height: auto;
+  margin-bottom: 2.5rem;
+  filter: brightness(0) invert(1);
+}
+
+.hero-title {
+  color: var(--text-white);
+  font-weight: 700;
+  font-size: 3.2rem;
+  line-height: 1.5;
+  margin-bottom: 1.25rem;
+ width: 100%;
+}
+
+.hero-subtitle {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.15rem;
+  font-weight: 400;
+  margin: 0;
+}
+
+/* ---------------------------------------------------------------------
+   RIGHT SIDE - FORM
+   --------------------------------------------------------------------- */
+
+.form-side {
+  flex: 1 1 40%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--background-color);
+  padding: 1rem;
+}
+
+.form-container {
+  width: 100%;
+  max-width: 380px;
+}
+
+.welcome-title {
+  font-weight: 800;
+  font-size: 1.9rem;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.welcome-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-bottom: 2rem;
+}
+
+.welcome-subtitle .portal-name {
+  color: var(--primary-color);
+  font-weight: 700;
+}
+
+.form-label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  margin-bottom: 0.4rem;
+}
+
+.input-icon-wrap {
+ position: relative;
+}
+
+.custom-input {
+  width: 100%;
+  height: 48px;
+  padding: 0.75rem 2.6rem 0.75rem 1rem;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  background-color: var(--input-background);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+   
+}
+
+.custom-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--shadow-focus);
+  background-color: var(--background-color);
+}
+
+.custom-input::placeholder {
+  color: var(--text-placeholder);
+}
+
+.input-icon {
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  transform: translateY(-50%);
+  color: var(--text-placeholder);
+  font-size: 1rem;
+}
+
+.icon-btn {
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.icon-btn:hover {
+  color: var(--primary-color);
+}
+.show-icon{
+ position: absolute;
+right: 15px;
+top: 50%;
+transform: translateY(-50%);
+cursor: pointer;
+ color: #6c757d;
+}
+
+.sign-in-btn {
+  width: 100%;
+  height: 50px;
+  background: var(--primary-color);
+  color: var(--text-white);
+  font-weight: 700;
+  font-size: 1rem;
+  border: none;
+  border-radius: var(--radius-md);
+  transition: var(--transition);
+}
+
+.sign-in-btn:hover:not(:disabled) {
+  background: var(--primary-color-dark);
+}
+.sign-in-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.sign-in-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.sign-in-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.register-text {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+.register-link {
+  color: var(--primary-color);
+  font-weight: 700;
+  text-decoration: none;
+  transition: var(--transition);
+}
+.register-link:hover {
+  text-decoration: underline;
+}
+/* ---------------------------------------------------------------------
+   RESPONSIVE
+   --------------------------------------------------------------------- */
+
+/* Tablets */
+@media (max-width: 991.98px) {
+  .hero-content {
+    padding: 2.5rem;
+  }
+
+  .hero-title {
+    font-size: 2.1rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 767.98px) {
+  .login-wrapper {
+    flex-direction: column;
+    min-height: auto;
+  }
+
+  .hero-side {
+    flex: 0 0 auto;
+    min-height: 260px;
+    padding: 0;
+  }
+
+  .hero-content {
+    padding: 2rem 1.5rem;
+    max-width: 100%;
+  }
+
+  .hero-logo {
+    height: 34px;
+    margin-bottom: 1.25rem;
+  }
+
+  .hero-title {
+    font-size: 1.6rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+
+  .form-side {
+    flex: 1 1 auto;
+    padding: 2rem 1.25rem 3rem;
+  }
+
+  .form-container {
+    max-width: 100%;
+  }
+}
+
+/* Very Small Phones */
+@media (max-width: 400px) {
+  .hero-side {
+    min-height: 220px;
+  }
+
+  .hero-title {
+    font-size: 1.4rem;
+  }
+
+  .welcome-title {
+    font-size: 1.6rem;
+  }
+}
