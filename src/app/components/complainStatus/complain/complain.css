@@ -1,0 +1,174 @@
+.complaint-overview {
+  background: var(--background-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+}
+
+/* =========================
+   Section Header
+========================= */
+
+.section-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--background-color);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-line {
+  width: 3px;
+  height: 18px;
+  background: var(--primary-color);
+  border-radius: 3px;
+}
+
+.header-content h3 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* Add Complaint */
+
+.add-complaint-btn {
+  width: 32px;
+  height: 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+
+  background: var(--background-color);
+  color: var(--primary-color);
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.add-complaint-btn span {
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1;
+  margin-top: -2px;
+}
+
+.add-complaint-btn:hover {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: var(--text-white);
+  transform: translateY(-1px);
+}
+
+.add-complaint-btn:active {
+  transform: translateY(0);
+}
+/* =========================
+   Table
+========================= */
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.complaint-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 1000px;
+}
+
+/* Header */
+
+.complaint-table thead {
+  background: var(--surface-color);
+}
+
+.complaint-table th {
+  padding: 13px 16px;
+  text-align: left;
+
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+/* Body */
+
+.complaint-table td {
+  padding: 17px 16px;
+
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 500;
+
+  border-bottom: 1px solid #f0f1f3;
+  vertical-align: middle;
+}
+
+.complaint-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.complaint-table tbody tr:hover {
+  background-color: #fafbfc;
+}
+
+.complaint-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* =========================
+   Important Fields
+========================= */
+
+.reg-no,
+.awb {
+  font-weight: 700 !important;
+  color: var(--text-primary) !important;
+}
+
+.awb {
+  letter-spacing: 0.2px;
+}
+
+/* =========================
+   Status
+========================= */
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 5px 10px;
+
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+
+  background: var(--surface-color);
+  color: var(--text-primary);
+
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}

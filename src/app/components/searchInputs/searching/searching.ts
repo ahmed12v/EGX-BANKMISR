@@ -5,6 +5,7 @@ import { trackingNow } from '../../../core/service/tracking';
 import { StorageService } from '../../../admin/service/storgeService';
 import { TrackInfoRes, TrackList } from '../../../core/interfaces/trackResponse';
 import { ShipmentDetails } from '../../../core/interfaces/searchPanel';
+import { awbStateService } from '../../../core/service/stats/awbstat';
 interface TrackingEvent {
   DeliveredTo: string;
   Location: string;
@@ -110,6 +111,7 @@ getStatusClass(status: string): string {
   awbSearch =signal<ShipmentDetails[]|null>(null)
   isEmpty=signal(false)
   isNotFound = signal(false);
+  _awbState= inject(awbStateService)
   //#endregion
 
   //#region searching Design
@@ -178,6 +180,9 @@ trackingNowByAwb(awb: string){
           this.trackInfoo.set(res)
           this.trackingList.set([...res.TrackInfo[0].trackList])
           this.isNotFound.set(false);
+          this._awbState.set(res.TrackInfo[0].ShipmentInformation.AWBNo)
+          //console.log(this._awbState.awbNum());
+          
       },
       error:err=>{
         this.trackInfoo.set(null);
