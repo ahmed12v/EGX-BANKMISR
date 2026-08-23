@@ -1,3 +1,4 @@
+@if(staeservice.awbNum()){
 <div class="complaint-overview">
   <div class="section-header">
     <div class="header-content">
@@ -12,8 +13,10 @@
 
   <div class="table-wrapper">
     <table class="complaint-table">
-      <thead>
-        <tr>
+     
+        @if (complaints()?.length != 0 || null) {
+           <thead>
+          <tr>
           <th>Complaint Reg No</th>
           <th>Date Logged</th>
           <th>Associated Airway Bill</th>
@@ -24,17 +27,179 @@
       </thead>
 
       <tbody>
-        <tr>
-          <td class="reg-no">CR-2026-00125</td>
-          <td>18 Aug 2026</td>
-          <td class="awb">123-45678901</td>
-          <td>Shipment delivery delay</td>
-          <td>Delivery Delay</td>
+        @for (item of complaints(); track item.CoReg) {
+        <tr
+        class="complaint-row"
+      (click)="openComplaintDetails(item)">
+          <td class="reg-no">{{ item.CoReg }}</td>
+          <td>{{ item.ComplaintDate }}</td>
+          <td class="awb">{{ item.AirwayBillNo }}</td>
+          <td>{{ item.Complaint.length > 80 
+        ? (item.Complaint | slice:0:80) + '...'
+        : item.Complaint }}</td>
+          <td> {{ item.RootCause.trim() }}</td>
           <td>
-            <span class="status-badge">In Progress</span>
+            <span class="status-badge">{{item.Status}}</span>
           </td>
         </tr>
+      }
       </tbody>
+        }
+        @else{
+          <div class="no-complaints">
+  <div class="no-complaints-icon">
+    <i class="fa-solid fa-circle-check"></i>
+  </div>
+
+  <h4>No Complaints Found</h4>
+
+  <p>
+    There are no complaints registered for this shipment.
+  </p>
+</div>
+        }
+        
     </table>
   </div>
 </div>
+}
+@if (selectedComplaint()) {
+  <div class="complaint-modal-backdrop" (click)="closeComplaintDetails()">
+
+    <div
+      class="complaint-modal"
+      (click)="$event.stopPropagation()"
+    >
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+
+        <div class="modal-title-wrapper">
+          <span class="modal-title-line"></span>
+
+          <div>
+            <h3>Complaint Details</h3>
+            <span class="modal-subtitle">
+              Complaint Reg No. {{ selectedComplaint()?.CoReg }}
+            </span>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="modal-close-btn"
+          (click)="closeComplaintDetails()"
+          aria-label="Close"
+        >
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+      </div>
+
+
+      <!-- Modal Body -->
+      <div class="modal-body">
+
+        <div class="details-grid">
+
+          <div class="detail-item">
+            <span class="detail-label">Complaint Reg No</span>
+            <span class="detail-value highlight">
+              {{ selectedComplaint()?.CoReg }}
+            </span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">Date Logged</span>
+            <span class="detail-value">
+              {{ selectedComplaint()?.ComplaintDate }}
+            </span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">Associated Airway Bill</span>
+            <span class="detail-value highlight">
+              {{ selectedComplaint()?.AirwayBillNo }}
+            </span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">Lifecycle Status</span>
+
+            <span class="status-badge modal-status">
+              {{ selectedComplaint()?.Status }}
+            </span>
+          </div>
+
+        </div>
+
+
+        <!-- Complaint -->
+        <div class="detail-section">
+
+          <div class="detail-section-title">
+            <i class="fa-regular fa-message"></i>
+            <span>Complaint</span>
+          </div>
+
+          <div class="detail-content">
+            {{ selectedComplaint()?.Complaint }}
+          </div>
+
+        </div>
+
+
+        <!-- Root Cause -->
+        <div class="detail-section">
+
+          <div class="detail-section-title">
+            <i class="fa-solid fa-diagram-project"></i>
+            <span>Root Cause</span>
+          </div>
+
+          <div class="detail-content">
+            {{ selectedComplaint()?.RootCause?.trim() }}
+          </div>
+
+        </div>
+
+
+        <!-- Remarks -->
+        @if (selectedComplaint()?.Remarks) {
+
+          <div class="detail-section">
+
+            <div class="detail-section-title">
+              <i class="fa-regular fa-note-sticky"></i>
+              <span>Remarks</span>
+            </div>
+
+            <div class="detail-content">
+              {{ selectedComplaint()?.Remarks }}
+            </div>
+
+          </div>
+
+        }
+
+      </div>
+
+
+      <!-- Footer -->
+      <div class="modal-footer">
+
+        <button
+          type="button"
+          class="modal-close-action"
+          (click)="closeComplaintDetails()"
+        >
+          Close
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+}
+

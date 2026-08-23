@@ -181,7 +181,7 @@ trackingNowByAwb(awb: string){
           this.trackingList.set([...res.TrackInfo[0].trackList])
           this.isNotFound.set(false);
           this._awbState.set(res.TrackInfo[0].ShipmentInformation.AWBNo)
-          //console.log(this._awbState.awbNum());
+          console.log(this._awbState.awbNum());
           
       },
       error:err=>{
