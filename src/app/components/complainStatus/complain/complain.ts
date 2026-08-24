@@ -1,4 +1,4 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, effect, inject, output, signal } from '@angular/core';
 import { awbStateService } from '../../../core/service/stats/awbstat';
 import { Complaint } from '../../../core/interfaces/complain';
 import { complainService } from '../../../core/service/complain';
@@ -14,6 +14,11 @@ import { SlicePipe } from '@angular/common';
   styleUrl: './complain.css',
 })
 export class Complain {
+   addComplaint = output<string | null>();
+
+  openRaiseComplaint(awb:string | null) {
+     this.addComplaint.emit(awb);
+  }
     constructor(private _awbsate:awbStateService){
    //  console.log('QUERY CONSTRUCTOR:', this._awbsate.awbNum());
     effect(()=>{

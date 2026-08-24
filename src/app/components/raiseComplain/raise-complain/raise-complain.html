@@ -1,0 +1,140 @@
+<div class="wrap">
+ 
+  <!-- Top banner -->
+  <div class="topbar">
+    <div class="icon-badge"><i class="fa-solid fa-headset"></i></div>
+    <div>
+      <h1>Customer Complaint Registration Registry</h1>
+      <p>Log, categorize, track resolution status indices, and trail systemic action taken metrics</p>
+    </div>
+    <div class="reg-pill"><span class="dot"></span> Registration No. 10355</div>
+  </div>
+ 
+  <div class="row g-3">
+ 
+    <!-- Left panel -->
+    <div class="col-lg-6">
+      <div class="panel">
+        <div class="panel-head dark">
+          <span class="ic"><i class="fa-solid fa-user"></i></span>
+          Complainant Contact Context
+        </div>
+        <div class="panel-body">
+ 
+          <div class="row">
+            <div class="col-sm-6 field">
+              <label><i class="fa-solid fa-hashtag"></i>Registration No.</label>
+              <input type="text" class="form-control fw-semibold" value="10355" style="color:var(--orange-dark)" readonly>
+            </div>
+            <div class="col-sm-6 field">
+              <label><i class="fa-regular fa-calendar"></i>Date Lodged</label>
+              <input type="date" class="form-control" value="2026-08-24">
+            </div>
+          </div>
+ 
+          <div class="row">
+            <div class="col-sm-6 field">
+              <label><i class="fa-solid fa-id-badge"></i>Account Code</label>
+              <input type="text" class="form-control" value="dh02043">
+            </div>
+            <div class="col-sm-6 field">
+              <label><i class="fa-solid fa-building"></i>Company Profile / Corporate Title</label>
+              <input type="text" class="form-control" value="BANK MISR">
+            </div>
+          </div>
+ 
+          <div class="field">
+            <label><i class="fa-regular fa-id-card"></i>Complainant Registered Name</label>
+            <input type="text" class="form-control" value="Abdel Wahab">
+          </div>
+ 
+          <div class="row">
+            <div class="col-sm-6 field">
+              <label><i class="fa-solid fa-phone"></i>Contact Phone No.</label>
+              <input type="tel" class="form-control" value="000000">
+            </div>
+            <div class="col-sm-6 field">
+              <label><i class="fa-regular fa-envelope"></i>Communication Email Endpoint</label>
+              <input type="email" class="form-control" value="abdelwahab.elshorbagi@banquemisr.com">
+            </div>
+          </div>
+ 
+          <div class="divider-label">Incident Details</div>
+ 
+          <div class="field">
+            <label><i class="fa-solid fa-file-lines"></i>Detailed Nature of Incident Narrative</label>
+            <textarea class="form-control" rows="4" placeholder="Log deep technical error tracking parameters, discrepancy indexes, or operational failures reported by client…"></textarea>
+            <div class="helper">Include timestamps, reference IDs, and any error codes the client shared.</div>
+          </div>
+ 
+        </div>
+      </div>
+    </div>
+ 
+    <!-- Right panel -->
+    <div class="col-lg-6">
+      <div class="panel">
+        <div class="panel-head orange">
+          <span class="ic"><i class="fa-solid fa-route"></i></span>
+          Investigation &amp; Routing Level Actions
+        </div>
+        <div class="panel-body">
+ 
+          <div class="row">
+            <div class="col-sm-6 field">
+              <label><i class="fa-solid fa-plane"></i>Associated Airwaybill No. (AWB)</label>
+              <input disabled type="text" class="form-control" placeholder="AWB Reference Identification" [value]=awb()>
+            </div>
+            <div class="col-sm-6 field">
+              <label><i class="fa-solid fa-box"></i>Associated Cargo Booking No</label>
+              <input type="text" class="form-control" placeholder="Booking Request Code Map">
+            </div>
+          </div>
+ 
+          <div class="field">
+            <label><i class="fa-solid fa-layer-group"></i>Root Classification Category Type</label>
+            <select class="form-select">
+              <option selected disabled>Select a classification…</option>
+              <option>Service Delay</option>
+              <option>Billing Discrepancy</option>
+              <option>Documentation Error</option>
+              <option>Damage / Loss</option>
+              <option>Other</option>
+            </select>
+          </div>
+ 
+          <div class="row">
+            <div class="col-sm-5 field readonly">
+              <label><i class="fa-solid fa-lock"></i>Internal Status Code</label>
+              <input type="text" class="form-control text-center" value="Status ID" readonly>
+            </div>
+            <div class="col-sm-7 field readonly">
+              <label><i class="fa-solid fa-lock"></i>Current Processing Status Label</label>
+              <div class="form-control d-flex align-items-center justify-content-between" style="background:var(--readonly-bg);border-style:dashed;">
+                <span>Pending Resolution Trail Discovery</span>
+                <span class="badge rounded-pill" style="background:#fde3d1;color:var(--orange-dark);font-family:'Inter',sans-serif;font-weight:700;">Pending</span>
+              </div>
+            </div>
+          </div>
+ 
+          <div class="divider-label">Resolution Log</div>
+ 
+          <div class="field readonly">
+            <label><i class="fa-solid fa-lock"></i>Consolidated Resolution Action Taken Summary</label>
+            <textarea class="form-control" rows="5" placeholder="Read-only operations desk resolution summary log…" readonly></textarea>
+          </div>
+ 
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- Actions -->
+  <div class="actions">
+    <span class="note"><i class="fa-regular fa-clock"></i>&nbsp; Autosaved as draft</span>
+    <button class="btn btn-outline-soft"><i class="fa-solid fa-rotate-left"></i>Clear Screen</button>
+    <button class="btn btn-dark-slate"><i class="fa-regular fa-note-sticky"></i>Append Notes</button>
+    <button class="btn btn-primary-orange"><i class="fa-solid fa-check"></i>Register Complaint</button>
+  </div>
+ 
+</div>
