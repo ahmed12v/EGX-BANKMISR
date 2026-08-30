@@ -1,13 +1,17 @@
 <div class="container mb-5">
-
-  <app-searching></app-searching>
-
-  <app-complain 
-    (addComplaint)="openRaiseComplaint($event)">
-  </app-complain>
-
-  @if (showRaiseComplaint()) {
-    <app-raise-complain  [awb]="selectedAwb()"></app-raise-complain>
-  }
-
+  <app-searching (newSearch)="closeRaiseComplaint()"></app-searching>
+@if (_abwstate.awbNum()) {
+    <app-complain
+      (addComplaint)="openRaiseComplaint($event)">
+    </app-complain>
+}
+ @if (showRaiseComplaint() && selectedAwb()) {
+  <app-raise-complain 
+    id="raise-complaint"
+    [awb]="selectedAwb()!">
+  </app-raise-complain>
+}
 </div>
+<div class="top-right-component">
+  <app-logout></app-logout>
+</div>   

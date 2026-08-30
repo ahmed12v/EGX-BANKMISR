@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { StorageService } from '../../../admin/service/storgeService';
+import { awbStateService } from '../../../core/service/stats/awbstat';
 
 @Component({
   selector: 'app-logout',
@@ -12,6 +13,7 @@ export class Logout {
   isUserMenuOpen = false;
   _router = inject(Router)
   _storage= inject(StorageService)
+  _abwstate= inject(awbStateService)
 
 toggleUserMenu(): void {
   this.isUserMenuOpen = !this.isUserMenuOpen;
@@ -21,6 +23,7 @@ logout(): void {
   this.isUserMenuOpen = false;
 
   // Logout logic
+  this._abwstate.clear()
   this._router.navigate(['/login']);
   localStorage.removeItem('userCredentials')
 }

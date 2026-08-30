@@ -7,7 +7,7 @@ body {
     radial-gradient(1100px 500px at 100% -10%, #fbeadf 0%, transparent 55%),
     radial-gradient(900px 500px at -10% 110%, #e7ecf5 0%, transparent 55%),
     #eef1f6;
-  font-family: 'Inter', sans-serif;
+  
   color: #232734;
   min-height: 100vh;
   padding: 32px 16px 60px;
@@ -16,6 +16,9 @@ body {
 .wrap {
   
   margin: 50px auto;
+}
+:host {
+  font-family: inherit;
 }
 
 /* ===== Top banner ===== */
@@ -65,7 +68,6 @@ body {
   margin-inline-start: auto;
   background: #fdece4;
   color: #c94f1f;
-  font-family: 'JetBrains Mono', monospace;
   font-weight: 600;
   font-size: .8rem;
   padding: 8px 14px;
@@ -169,7 +171,6 @@ body {
 
 .form-control::placeholder {
   color: #adb3c1;
-  font-family: 'JetBrains Mono', monospace;
   font-size: .83rem;
 }
 

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, EventEmitter, inject, Output, signal } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { trackingNow } from '../../../core/service/tracking';
 import { StorageService } from '../../../admin/service/storgeService';
@@ -101,8 +101,8 @@ getStatusClass(status: string): string {
   return classes[status] || 'status-default';
 }
 //#endregion
-
   //#region inhection
+  @Output() newSearch = new EventEmitter<void>();
   _trackingService= inject(trackingNow)
   _storgeService = inject(StorageService)
   trackInfoo = signal<TrackInfoRes | null >(null)
@@ -113,7 +113,6 @@ getStatusClass(status: string): string {
   isNotFound = signal(false);
   _awbState= inject(awbStateService)
   //#endregion
-
   //#region searching Design
 searchType: 'awb' | 'shipperReference' = 'awb';
 searchValue = '';
@@ -139,6 +138,17 @@ search(): void {
   if (!value) {
     return;
   }
+ this._awbState.clear();
+  // Clear previous search result
+  this.trackInfoo.set(null);
+  this.trackingList.set(null);
+  this.awbSearch.set(null);
+
+  // Clear previous messages
+  this.isEmpty.set(false);
+  this.isNotFound.set(false);
+
+  this.newSearch.emit();
 
   if (this.searchType === 'awb') {
     this.trackingNowByAwb(value);
