@@ -1,5 +1,4 @@
 <div class="login-wrapper">
-
   <!-- Left side - Hero -->
   <div class="hero-side">
     <div class="hero-overlay"></div>
@@ -8,34 +7,34 @@
       <img src="/EGLOGO.png" alt="EG Xpress" class="hero-logo" />
 
       <h1 class="hero-title">
-        Streamline Your Business <br class="d-none d-lg-block" />
-        Logistics
+        Your deliveries. <br class="d-none d-lg-block" />
+        A clearer journey.
       </h1>
 
-      <p class="hero-subtitle">with Our Efficient Shipping Solutions</p>
+      <p class="hero-subtitle">Track shipments and manage delivery support with Egypt Express.</p>
     </div>
   </div>
 
   <!-- Right side - Form -->
   <div class="form-side">
     <div class="form-container">
-
-      <h2 class="welcome-title">Welcome Back</h2>
+      <h2 class="welcome-title">Welcome back</h2>
       <p class="welcome-subtitle">
         Accessing Portal: <span class="portal-name">Egypt Express</span>
       </p>
-      <div class="d-flex justify-content-center">
-        <p class="text-danger small ">
-          {{cradentionalInvalid()}}
+      @if (cradentionalInvalid()) {
+<div class="d-flex justify-content-center">
+        <p class="text-danger small" role="alert">
+          {{ cradentionalInvalid() }}
         </p>
       </div>
-      <form [formGroup]="loginForm" (ngSubmit)="loginNow()">
-
+      }
+    <form [formGroup]="loginForm" (ngSubmit)="loginNow()">
         <div class="form-group mb-3">
-          <label for="email" class="form-label">User ID / Email</label>
+          <label for="user-id" class="form-label">User ID / Email</label>
           <div class="input-icon-wrap">
             <input
-              formControlName="UserID"
+              id="user-id" formControlName="UserID"
               type="text"
               class="form-control custom-input"
               placeholder="you@example.com"
@@ -43,66 +42,57 @@
             />
             <i class="bi bi-envelope input-icon"></i>
           </div>
-          @if (loginForm.get('UserID')?.errors&& loginForm.get('UserID')?.touched) {
-                    <div class="text-danger mt-1 small">
-                          @if (loginForm.get('UserID')?.errors?.['required']) {
-                               <span>Email / User ID is required.</span>
-                                }
-                         
-                           
-                    </div>
-                 }
+          @if (loginForm.get('UserID')?.errors && loginForm.get('UserID')?.touched) {
+            <div class="text-danger mt-1 small">
+              @if (loginForm.get('UserID')?.errors?.['required']) {
+                <span>Email / User ID is required.</span>
+              }
+            </div>
+          }
         </div>
 
         <div class="form-group mb-4">
           <label for="password" class="form-label">Password</label>
           <div class="input-icon-wrap">
             <input
-            formControlName="UserPwd"
-              [type]="showPassword ? 'text' : 'password'"
+              formControlName="UserPwd"
+              [type]="showPassword() ? 'text' : 'password'"
               id="password"
               name="password"
               class="form-control custom-input"
               placeholder="••••••"
               autocomplete="current-password"
             />
-            <i
+            <button
+              type="button"
+              aria-label="Toggle password visibility"
               class="fa-solid show-icon"
-              [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"
+              [ngClass]="showPassword() ? 'fa-eye-slash' : 'fa-eye'"
               (click)="togglePassword()"
-           ></i>
-            
+            ></button>
+          </div>
+          @if (loginForm.get('UserPwd')?.errors && loginForm.get('UserPwd')?.touched) {
+            <div class="text-danger mt-1 small">
+              @if (loginForm.get('UserPwd')?.errors?.['required']) {
+                <span>password is required.</span>
+              }
+            </div>
+          }
         </div>
-        @if (loginForm.get('UserPwd')?.errors&& loginForm.get('UserPwd')?.touched) {
-                    <div class="text-danger mt-1 small">
-                          @if (loginForm.get('UserPwd')?.errors?.['required']) {
-                               <span>password is required.</span>
-                                }
-                          
-                           
-                    </div>
-                 }
-        </div>
-       <button
-  type="submit"
-  class="btn sign-in-btn w-100"
-  [disabled]="isLoading() || loginForm.invalid">
-  
-  @if (isLoading()) {
-    <i class="fa-solid fa-spinner fa-spin"></i>
-  } @if (!isLoading()) {
-    Sign In
-  }
+        <button
+          type="submit"
+          class="btn sign-in-btn w-100"
+          [disabled]="isLoading() || loginForm.invalid"
+        >
+          @if (isLoading()) {
+            <i class="fa-solid fa-spinner fa-spin"></i>
+          }
+          @if (!isLoading()) {
+            Sign In
+          }
+        </button>
 
-</button>
-
-        <p class="register-text">
-          New User?  
-          <a class="register-link">
-            Register as New User
-          </a>
-        </p>
-
+        <p class="register-text">Use the credentials provided for your company account.</p>
       </form>
     </div>
   </div>

@@ -4,8 +4,8 @@
   <div class="topbar">
     <div class="icon-badge"><i class="fa-solid fa-headset"></i></div>
     <div>
-      <h1>Customer Complaint Registration Registry</h1>
-      <p>Log, categorize, track resolution status indices, and trail systemic action taken metrics</p>
+      <h1>Register a complaint</h1>
+      <p>Tell us what happened so our team can help with your shipment.</p>
     </div>
     <div class="reg-pill"><span class="dot"></span> Registration No. {{complainRgister()}}</div>
   </div>
@@ -18,7 +18,7 @@
       <div class="panel">
         <div class="panel-head dark">
           <span class="ic"><i class="fa-solid fa-user"></i></span>
-          Complainant Contact Context
+          Your account details
         </div>
         <div class="panel-body">
  
@@ -41,13 +41,13 @@
               <input  type="text" class="form-control"[value]='accountDetails()?.cl_AccCode' formControlName="cl_ClientCode" readonly>
             </div>
             <div class="col-sm-6 field">
-              <label><i class="fa-solid fa-building"></i>Company Profile / Corporate Title</label>
+              <label><i class="fa-solid fa-building"></i>Company name</label>
               <input type="text"  class="form-control"[value]='accountDetails()?.cl_CustName' formControlName="cl_CustName" readonly>
             </div>
           </div>
  
           <div class="field">
-            <label><i class="fa-regular fa-id-card"></i>Complainant Registered Name</label>
+            <label><i class="fa-regular fa-id-card"></i>Contact name</label>
             <input type="text" class="form-control"[value]='accountDetails()?.cl_CPerson'  formControlName="cl_cPerson" readonly>
           </div>
  
@@ -57,7 +57,7 @@
               <input type="tel" class="form-control" [value]='accountDetails()?.cl_CustPhone || accountDetails()?.cl_CustMobile || "" ' formControlName="cl_tel" readonly>
             </div>
             <div class="col-sm-6 field">
-              <label><i class="fa-regular fa-envelope"></i>Communication Email Endpoint</label>
+              <label><i class="fa-regular fa-envelope"></i>Email address</label>
               <input type="email" class="form-control" [value]='accountDetails()?.cl_CustEMail' formControlName="cl_email" readonly>
             </div>
           </div>
@@ -65,8 +65,8 @@
           <div class="divider-label">Incident Details</div>
  
           <div class="field">
-            <label><i class="fa-solid fa-file-lines"></i>Detailed Nature of Incident Narrative</label>
-            <textarea formControlName="cl_complaint" class="form-control" rows="4" placeholder="Log deep technical error tracking parameters, discrepancy indexes, or operational failures reported by client…"></textarea>
+            <label><i class="fa-solid fa-file-lines"></i>What happened?</label>
+            <textarea formControlName="cl_complaint" class="form-control" rows="4" placeholder="Describe the delivery issue and how we can help."></textarea>
             <div class="helper">Include timestamps, reference IDs, and any error codes the client shared.</div>
           </div>
  
@@ -79,23 +79,23 @@
       <div class="panel">
         <div class="panel-head orange">
           <span class="ic"><i class="fa-solid fa-route"></i></span>
-          Investigation &amp; Routing Level Actions
+          Shipment &amp; complaint details
         </div>
         <div class="panel-body">
  
           <div class="row">
             <div class="col-sm-6 field">
-              <label><i class="fa-solid fa-plane"></i>Associated Airwaybill No. (AWB)</label>
-              <input  type="text"  class="form-control" placeholder="AWB Reference Identification" [value]=awb()>
+              <label><i class="fa-solid fa-plane"></i>AWB number</label>
+              <input type="text" class="form-control" [value]="awb()" readonly>
             </div>
             <div class="col-sm-6 field">
-              <label><i class="fa-solid fa-box" ></i>Associated Cargo Booking No</label>
+              <label><i class="fa-solid fa-box" ></i>Booking reference</label>
               <input  type="text" class="form-control" formControlName="cl_EnqRefNo" placeholder="Booking Request Code Map">
             </div>
           </div>
  
           <div class="field">
-            <label><i class="fa-solid fa-layer-group"></i>Root Classification Category Type</label>
+            <label><i class="fa-solid fa-layer-group"></i>Complaint category</label>
             <select class="form-select"  formControlName="cl_Root">
               <option selected disabled>Select a classification…</option>
               @for (item of selectors(); track $index) {
@@ -112,9 +112,9 @@
               <input type="text" class="form-control text-center" value="Status ID" readonly>
             </div>
             <div class="col-sm-7 field readonly">
-              <label><i class="fa-solid fa-lock"></i>Current Processing Status Label</label>
+              <label><i class="fa-solid fa-lock"></i>Status</label>
               <div class="form-control d-flex align-items-center justify-content-between" style="background:var(--readonly-bg);border-style:dashed;">
-                <span>Pending Resolution Trail Discovery</span>
+                <span>Awaiting review</span>
                 <span class="badge rounded-pill" style="background:#fde3d1;color:var(--orange-dark);font-family:'Inter',sans-serif;font-weight:700;">Pending</span>
               </div>
             </div>
@@ -123,8 +123,8 @@
           <div class="divider-label">Resolution Log</div>
  
           <div class="field readonly">
-            <label><i class="fa-solid fa-lock"></i>Consolidated Resolution Action Taken Summary</label>
-            <textarea class="form-control" rows="5" placeholder="Read-only operations desk resolution summary log…" readonly></textarea>
+            <label><i class="fa-solid fa-lock"></i>Resolution notes</label>
+            <textarea class="form-control" rows="5" placeholder="Support team updates will appear here." readonly></textarea>
           </div>
  
         </div>
@@ -133,11 +133,12 @@
   </div>
  
   <!-- Actions -->
+  @if (submitError()) {<p class="text-danger small" role="alert">{{ submitError() }}</p>}
   <div class="actions">
-    <span class="note" ><i class="fa-regular fa-clock"></i>&nbsp; Autosaved as draft</span>
-    <button class="btn btn-outline-soft" (click)="resetAll()" type="button"><i class="fa-solid fa-rotate-left"></i>Clear Screen</button>
-    <button class="btn btn-dark-slate" type="button"><i class="fa-regular fa-note-sticky"></i>Append Notes</button>
-    <button class="btn btn-primary-orange" type="submit"><i class="fa-solid fa-check"></i>Register Complaint</button>
+    <span class="note" ><i class="fa-regular fa-clock"></i>&nbsp; Review your details before submitting</span>
+    <button class="btn btn-outline-soft" (click)="resetAll()" type="button"><i class="fa-solid fa-rotate-left"></i>Reset form</button>
+    <button class="btn btn-dark-slate d-none" type="button"><i class="fa-regular fa-note-sticky"></i>Append Notes</button>
+    <button class="btn btn-primary-orange" type="submit" [disabled]="isSubmitting() || openpopupafterCreation()"><i class="fa-solid" [class.fa-spinner]="isSubmitting()" [class.fa-spin]="isSubmitting()" [class.fa-check]="!isSubmitting()"></i>{{ isSubmitting() ? "Registering…" : "Register Complaint" }}</button>
   </div>
   </form>
  
@@ -145,74 +146,21 @@
 
 <!-- Success Modal -->
 @if (openpopupafterCreation()) {
-  <div class="success-overlay">
-
-    <div class="success-popup">
-
-      <!-- Close -->
-      <button
-        type="button"
-        class="popup-close"
-        (click)="openpopupafterCreation.set(false)"
-        aria-label="Close"
-      >
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-
-      <!-- Success Icon -->
-      <div class="success-icon">
-        <div class="success-icon-inner">
-          <i class="fa-solid fa-check"></i>
-        </div>
-      </div>
-
-      <!-- Content -->
-      <div class="success-content">
-
-        <span class="success-label">
-          Complaint Registered
-        </span>
-
-        <h2>
-          Complaint Created Successfully
-        </h2>
-
-        <p>
-          Your complaint has been registered successfully
-          and is now available for tracking.
-        </p>
-
-        <!-- Complaint Number -->
-        <div class="complaint-number-box">
-
-          <span class="number-label">
-            Complaint Registration No.
-          </span>
-
-          <div class="complaint-number">
-            <i class="fa-solid fa-hashtag"></i>
-            <span>{{ complaincreatingNumber() }}</span>
-          </div>
-
-        </div>
-
-      </div>
-
-      <!-- Footer -->
-      <div class="success-footer">
-
-        <button
-          type="button"
-          class="success-btn"
-          (click)="openpopupafterCreation.set(false)"
-        >
-          <i class="fa-solid fa-check"></i>
-          Done
-        </button>
-
-      </div>
-
-    </div>
-
+  <div class="success-overlay" (keydown.escape)="finishComplaint()">
+    <section class="confirmation-dialog" role="dialog" aria-modal="true" aria-labelledby="complaint-success-title" aria-describedby="complaint-success-description">
+      <header class="confirmation-heading">
+        <span class="confirmation-icon"><i class="fa-solid fa-check" aria-hidden="true"></i></span>
+        <button type="button" class="confirmation-close" (click)="finishComplaint()" aria-label="Close and view shipment"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+      </header>
+      <h2 id="complaint-success-title">Complaint registered</h2>
+      <p id="complaint-success-description">Your complaint has been submitted successfully. Keep the reference number for follow-up.</p>
+      <dl class="confirmation-reference">
+        <div><dt>Complaint reference</dt><dd>{{ complaincreatingNumber() }}</dd></div>
+        <div><dt>AWB number</dt><dd>{{ awb() }}</dd></div>
+      </dl>
+      <footer class="confirmation-footer">
+        <button type="button" class="confirmation-action" (click)="finishComplaint()" autofocus>View shipment &amp; complaints<i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+      </footer>
+    </section>
   </div>
 }

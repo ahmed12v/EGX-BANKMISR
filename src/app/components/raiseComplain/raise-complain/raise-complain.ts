@@ -1,4 +1,6 @@
-import { Component, effect, inject, input, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy } from '@angular/core';
+import { Component, effect, inject, input, OnInit, output, signal } from '@angular/core';
+import { finalize } from 'rxjs';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { StorageService } from '../../../admin/service/storgeService';
 import { addComplainService } from '../../../core/service/raiseComplain';
@@ -6,6 +8,7 @@ import { ComplaintRequest, CustomerDetails, masterList, masterListResponse } fro
 import { errorContext } from 'rxjs/internal/util/errorContext';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-raise-complain',
   imports: [ReactiveFormsModule],
   templateUrl: './raise-complain.html',
@@ -18,6 +21,15 @@ export class RaiseComplain implements OnInit{
     this.getMyDetials()
   }
   awb = input<string>('');
+  readonly complaintCompleted = output<string>();
+  readonly isSubmitting = signal(false);
+  readonly submitError = signal('');
+
+  finishComplaint() {
+    if (!this.openpopupafterCreation()) return;
+    this.openpopupafterCreation.set(false);
+    this.complaintCompleted.emit(this.awb());
+  }
 
   //#region declartion
   fb=inject(FormBuilder)
@@ -196,6 +208,8 @@ complaintForm = this.fb.group({
 });
 
 CreateComplain(){
+  if (this.isSubmitting() || this.openpopupafterCreation() || !this.awb()) return;
+  this.submitError.set('');
   const userCradentional = this._storgeData.getItem('userCredentials');
   const account = this.accountDetails();
 
@@ -208,7 +222,7 @@ CreateComplain(){
       // Date Lodged
       cl_CoDate: this.today,
       // AWB
-      cl_AWBNO: '3030',
+      cl_AWBNO: this.awb(),
       // Account / Customer details
       cl_ClientCode: account?.cl_AccCode ?? '',
       cl_CustName: account?.cl_CustName ?? '',
@@ -237,22 +251,23 @@ CreateComplain(){
     }
   });
 
-  console.log(this.complaintForm.getRawValue());
-
   if(this.complaintForm.valid){
-    this._raiseService.addComplainNow(this.complaintForm.value as ComplaintRequest).subscribe({
+    this.isSubmitting.set(true);
+    this._raiseService.addComplainNow(this.complaintForm.value as ComplaintRequest)
+    .pipe(finalize(() => this.isSubmitting.set(false))).subscribe({
       next:res=>{
         this.complaincreatingNumber.set(res.BookingNo)
         this.complainResponse.set(res.Description)
         if(this.complainResponse() ==="SUCCESS"){
           this.openpopupafterCreation.set(true)
+        } else {
+          this.submitError.set(res.Description || 'Unable to register the complaint. Please try again.');
         }
-       this.getNumber()
 
 
       },
       error : err=>{
-               console.log(err);
+               this.submitError.set('Unable to register the complaint. Please try again.');
                
       }
     })

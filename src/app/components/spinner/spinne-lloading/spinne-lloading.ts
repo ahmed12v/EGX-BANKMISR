@@ -1,8 +1,10 @@
+import { ChangeDetectionStrategy } from '@angular/core';
 import { Component, inject } from '@angular/core';
 import { LoadingService } from '../../../core/service/spinner';
 import { CommonModule } from '@angular/common';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-spinne-lloading',
   imports: [CommonModule],
   templateUrl: './spinne-lloading.html',

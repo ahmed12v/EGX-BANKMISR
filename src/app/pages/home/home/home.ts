@@ -1,4 +1,5 @@
-import { Component, signal , Renderer2, inject  } from '@angular/core';
+import { ChangeDetectionStrategy } from '@angular/core';
+import { afterNextRender, Component, Injector, signal , Renderer2, inject, viewChild } from '@angular/core';
 import { Searching } from '../../../components/searchInputs/searching/searching';
 import { Complain } from '../../../components/complainStatus/complain/complain';
 import { RaiseComplain } from '../../../components/raiseComplain/raise-complain/raise-complain';
@@ -6,12 +7,52 @@ import { awbStateService } from '../../../core/service/stats/awbstat';
 import { Logout } from '../../../components/signout/logout/logout';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-home',
   imports: [Searching ,Complain, RaiseComplain , Logout],
   templateUrl: './home.html',
   styleUrl: './home.css',
+  host: { '(window:scroll)': 'updateScrollButton()' },
 })
 export class Home {
+  readonly showScrollTop = signal(false);
+
+  constructor() {
+    afterNextRender(() => this.updateScrollButton());
+  }
+
+  updateScrollButton() {
+    this.showScrollTop.set(window.scrollY > 160);
+  }
+
+  scrollToTop() {
+    window.scrollTo({
+      top: 0,
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+    });
+  }
+
+  readonly searching = viewChild.required(Searching);
+  private readonly injector = inject(Injector);
+  private readonly scrollToComplaintsAwb = signal<string | null>(null);
+
+  onComplaintCompleted(awb: string) {
+    this.closeRaiseComplaint();
+    this.scrollToComplaintsAwb.set(awb);
+    this.searching().refreshShipment(awb);
+  }
+
+  onComplaintsLoaded(awb: string) {
+    if (this.scrollToComplaintsAwb() !== awb) return;
+    this.scrollToComplaintsAwb.set(null);
+    afterNextRender(() => {
+      if (this._abwstate.awbNum() !== awb) return;
+      document.getElementById('shipment-complaints')?.scrollIntoView({
+        block: 'start',
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+      });
+    }, { injector: this.injector });
+  }
   selectedAwb = signal<string | null>(null);
   showRaiseComplaint = signal(false);
   renderer = inject(Renderer2)
@@ -41,6 +82,7 @@ openRaiseComplaint(awb:string | null) {
 }
 
 closeRaiseComplaint() {
+  this.scrollToComplaintsAwb.set(null);
   this.showRaiseComplaint.set(false);
   this.selectedAwb.set(null);
 }

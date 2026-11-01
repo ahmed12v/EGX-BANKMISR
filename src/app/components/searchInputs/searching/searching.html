@@ -1,197 +1,167 @@
-
 <div class="tracking-page">
-
   <!-- ================================================= -->
   <!-- SEARCH SECTION -->
   <!-- ================================================= -->
 
   <section class="search-section">
-
     <div class="container">
-
-      <div class="search-header">
-
-      </div>
-
-
       <!-- SEARCH BOX -->
 
       <div class="search-box">
-
         <!-- SEARCH TYPE -->
 
         <div class="search-type">
-
           <button
             type="button"
             class="search-type-btn"
             (click)="toggleSearchDropdown()"
+            [attr.aria-expanded]="isSearchDropdownOpen()"
           >
-
-            <i
-              [class]="
-                searchType === 'awb'
-                  ? 'fa-solid fa-box'
-                  : 'fa-solid fa-file-lines'
-              "
-            ></i>
+            <i [class]="searchType() === 'awb' ? 'fa-solid fa-box' : 'fa-solid fa-file-lines'"></i>
 
             <span>
-              {{
-                searchType === 'awb'
-                  ? 'AWB Number'
-                  : 'Shipper Reference'
-              }}
+              {{ searchType() === 'awb' ? 'AWB Number' : 'Shipper Reference' }}
             </span>
 
             <i class="fa-solid fa-chevron-down"></i>
-
           </button>
-
 
           <!-- DROPDOWN -->
 
-          <div
-            class="search-dropdown"
-            *ngIf="isSearchDropdownOpen"
-          >
-
+          <div class="search-dropdown" *ngIf="isSearchDropdownOpen()">
             <button
               type="button"
               (click)="selectSearchType('awb')"
-              [class.active]="searchType === 'awb'"
+              [class.active]="searchType() === 'awb'"
             >
-
               <i class="fa-solid fa-box"></i>
 
-              <span>
-                AWB Number
-              </span>
-
+              <span> AWB Number </span>
             </button>
-
 
             <button
               type="button"
               (click)="selectSearchType('shipperReference')"
-              [class.active]="searchType === 'shipperReference'"
+              [class.active]="searchType() === 'shipperReference'"
             >
-
               <i class="fa-solid fa-file-lines"></i>
 
-              <span>
-                Shipper Reference
-              </span>
-
+              <span> Shipper Reference </span>
             </button>
-
           </div>
-
         </div>
-
 
         <!-- INPUT -->
 
         <div class="search-input">
-
           <i class="fa-solid fa-magnifying-glass"></i>
 
           <input
+            #searchInput
             type="text"
-            [(ngModel)]="searchValue"
-            [placeholder]="
-              searchType === 'awb'
-                ? 'Enter AWB number'
-                : 'Enter shipper reference'
-            "
+            [ngModel]="searchValue()"
+            (ngModelChange)="searchValue.set($event)"
+            aria-label="Shipment number or reference"
+            [placeholder]="searchType() === 'awb' ? 'Enter AWB number' : 'Enter shipper reference'"
             (keyup.enter)="search()"
           />
-
         </div>
-
 
         <!-- BUTTON -->
 
         <button
           type="button"
           class="track-btn"
+          [disabled]="!searchValue().trim() || loading.isLoading()"
           (click)="search()"
         >
-
           <i class="fa-solid fa-magnifying-glass"></i>
 
-          Track
-
+          {{ loading.isLoading() ? 'Searching…' : 'Track shipment' }}
         </button>
-
       </div>
-
     </div>
-
   </section>
-  <section
-  class="not-found-section"
-  *ngIf="isNotFound()"
->
-  <div class="container">
-
-    <div class="not-found-card">
-
-      <div class="not-found-icon">
-        <i class="fa-solid fa-box-open"></i>
+  @if (isNotFound() || isEmpty() || searchError()) {
+    <section class="search-feedback container" role="status" aria-live="polite">
+      <div class="feedback-card">
+        <div class="feedback-symbol" [class.feedback-error]="searchError()">
+          <i
+            [class]="
+              searchError()
+                ? 'fa-solid fa-wifi'
+                : submittedSearch().type === 'awb'
+                  ? 'fa-solid fa-box-open'
+                  : 'fa-solid fa-file-circle-question'
+            "
+            aria-hidden="true"
+          ></i>
+        </div>
+        <span class="feedback-category">{{
+          submittedSearch().type === 'awb' ? 'AWB NUMBER' : 'SHIPPER REFERENCE'
+        }}</span>
+        <h2>
+          {{
+            searchError()
+              ? 'We couldn’t complete your search'
+              : submittedSearch().type === 'awb'
+                ? 'No shipment found'
+                : 'No matching reference found'
+          }}
+        </h2>
+        <p>
+          {{
+            searchError()
+              ? 'Something went wrong while loading the shipment. Please try again.'
+              : submittedSearch().type === 'awb'
+                ? 'We couldn’t find a shipment with this AWB number.'
+                : 'We couldn’t find a shipment linked to this shipper reference in the last 12 months.'
+          }}
+        </p>
+        <div class="feedback-query">
+          <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i
+          ><span>{{ submittedSearch().value }}</span>
+        </div>
+        @if (!searchError()) {
+          <p class="feedback-tip">
+            {{
+              submittedSearch().type === 'awb'
+                ? 'Check the letters and numbers on your shipping label, then search again.'
+                : 'Check the reference provided by the sender, or try tracking with the AWB number.'
+            }}
+          </p>
+        }
+        <div class="feedback-actions">
+          <button type="button" class="feedback-primary" (click)="editSearch()">
+            <i class="fa-solid fa-pen" aria-hidden="true"></i>Edit search
+          </button>
+          <button type="button" class="feedback-secondary" (click)="tryOtherSearchType()">
+            {{ submittedSearch().type === 'awb' ? 'Use shipper reference' : 'Use AWB number'
+            }}<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+          </button>
+        </div>
       </div>
-
-      <h3>
-        Shipment Not Found
-      </h3>
-
-      <p>
-        No shipment was found for AWB
-        <strong>{{ searchValue }}</strong>
-      </p>
-
-      <span>
-        Please check the AWB number and try again.
-      </span>
-
-    </div>
-
-  </div>
-</section>
-
+    </section>
+  }
 
   <!-- ================================================= -->
   <!-- SEARCH RESULT -->
   <!-- ================================================= -->
 
-  <section
-    class="results-section"
-    *ngIf="trackInfoo() as result"
-  >
-
+  <section class="results-section" *ngIf="trackInfoo() as result">
     <div class="container">
-
-
       <!-- ================================================= -->
       <!-- SHIPMENT HEADER -->
       <!-- ================================================= -->
 
       <div class="shipment-card">
-
         <div class="shipment-left">
-
           <div class="shipment-icon">
-
             <i class="fa-solid fa-box"></i>
-
           </div>
 
-
           <div>
-
-            <span class="label">
-              AIR WAYBILL
-            </span>
+            <span class="label"> AIR WAYBILL </span>
 
             <h2>
               {{ result.TrackInfo[0].ShipmentInformation.AWBNo }}
@@ -201,325 +171,182 @@
               Account:
               {{ result.TrackInfo[0].ShipmentInformation.AccountNo }}
             </span>
-
           </div>
-
         </div>
-
 
         <!-- CURRENT STATUS -->
 
-        <div
-          class="current-status"
-          *ngIf="trackingList()?.length"
-        >
+        <div class="current-status" *ngIf="trackingList()?.length">
+          <span class="label"> CURRENT STATUS </span>
 
-          <span class="label">
-            CURRENT STATUS
-          </span>
+          <div class="current-status-badge" [ngClass]="getStatusClass(trackingList()![0].Status)">
+            <i [class]="getStatusIcon(trackingList()![0].Status)"></i>
 
-          <div
-            class="current-status-badge"
-            [ngClass]="
-              getStatusClass(
-                trackingList()![0].Status
-              )
-            "
-          >
-
-            <i
-              [class]="
-                getStatusIcon(
-                  trackingList()![0].Status
-                )
-              "
-            ></i>
-
-            {{
-              getStatusLabel(
-                trackingList()![0].Status
-              )
-            }}
-
+            {{ getStatusLabel(trackingList()![0].Status) }}
           </div>
-
         </div>
-
       </div>
-
 
       <!-- ================================================= -->
       <!-- ROUTE -->
       <!-- ================================================= -->
 
-      <!-- <div class="route-card">
-
+      <div class="route-card">
         <div class="route-location">
-
-          <span>
-            FROM
-          </span>
+          <span> FROM </span>
 
           <strong>
             {{ result.TrackInfo[0].ShipmentInformation.Origin }}
           </strong>
-
         </div>
 
-
         <div class="route-middle">
-
           <div class="route-line"></div>
 
           <div class="route-plane">
-
             <i class="fa-solid fa-plane"></i>
-
           </div>
 
           <div class="route-line"></div>
-
         </div>
 
-
         <div class="route-location destination">
-
-          <span>
-            TO
-          </span>
+          <span> TO </span>
 
           <strong>
             {{ result.TrackInfo[0].ShipmentInformation.Destination }}
           </strong>
-
         </div>
-
-      </div> -->
-
+      </div>
 
       <!-- ================================================= -->
       <!-- SHIPMENT INFO -->
       <!-- ================================================= -->
 
       <div class="shipment-info-grid">
-
-
         <!-- SENDER -->
 
         <div class="info-box">
-
           <div class="info-icon">
-
             <i class="fa-solid fa-user"></i>
-
           </div>
 
           <div>
-
-            <span>
-              Sender
-            </span>
+            <span> Sender </span>
 
             <strong>
-              {{ result.TrackInfo[0].ShipmentInformation.Sender }}
+              BANK MISR
             </strong>
-
+            @if (senderAddress()) {
+              <p class="sender-address">{{ senderAddress() }}</p>
+            }
           </div>
-
         </div>
-
 
         <!-- RECEIVER -->
 
         <div class="info-box">
-
           <div class="info-icon">
-
             <i class="fa-solid fa-user-check"></i>
-
           </div>
 
-          <div>
-
-            <span>
-              Receiver
-            </span>
-
-            <strong>
-              {{ result.TrackInfo[0].ShipmentInformation.Receiver }}
-            </strong>
-
+          <div class="receiver-details">
+            <span> Receiver </span>
+            <strong dir="auto">{{ result.TrackInfo[0].ShipmentInformation.Receiver }}</strong>
+            @if (receiverAddress()) {
+              <p class="sender-address" dir="auto">{{ receiverAddress() }}</p>
+            }
           </div>
-
         </div>
-
 
         <!-- WEIGHT -->
 
         <div class="info-box">
-
           <div class="info-icon">
-
             <i class="fa-solid fa-weight-hanging"></i>
-
           </div>
 
           <div>
-
-            <span>
-              Weight
-            </span>
+            <span> Weight </span>
 
             <strong>
               {{ result.TrackInfo[0].ShipmentInformation.Weight }}
               KG
             </strong>
-
           </div>
-
         </div>
-
 
         <!-- PIECES -->
 
         <div class="info-box">
-
           <div class="info-icon">
-
             <i class="fa-solid fa-boxes-stacked"></i>
-
           </div>
 
           <div>
-
-            <span>
-              Pieces
-            </span>
+            <span> Pieces </span>
 
             <strong>
               {{ result.TrackInfo[0].ShipmentInformation.Pcs }}
             </strong>
-
           </div>
-
         </div>
-
       </div>
-
 
       <!-- ================================================= -->
       <!-- TRACKING -->
       <!-- ================================================= -->
 
       <div class="tracking-card">
-
         <div class="tracking-header">
-
           <div>
+            <span class="section-label"> TRACKING HISTORY </span>
 
-            <span class="section-label">
-              TRACKING HISTORY
-            </span>
-
-            <h3>
-              Shipment Updates
-            </h3>
-
+            <h3>Shipment Updates</h3>
           </div>
 
-
           <div class="events-count">
-
             {{ trackingList()?.length || 0 }}
 
             Events
-
           </div>
-
         </div>
-
 
         <!-- TIMELINE -->
 
         <div class="timeline">
-
-          <div
-            class="timeline-item"
-            *ngFor="
-              let event of trackingList();
-              let i = index
-            "
-          >
-
+          <div class="timeline-item" *ngFor="let event of trackingEvents(); let i = index">
             <!-- CONNECTOR -->
 
-            <div
-              class="timeline-connector"
-              *ngIf="
-                i <
-                (trackingList()?.length || 0) - 1
-              "
-            ></div>
-
+            <div class="timeline-connector" *ngIf="i < (trackingList()?.length || 0) - 1"></div>
 
             <!-- ICON -->
 
-            <div
-              class="timeline-icon"
-              [ngClass]="
-                getStatusClass(event.Status)
-              "
-            >
-
-              <i
-                [class]="
-                  getStatusIcon(event.Status)
-                "
-              ></i>
-
+            <div class="timeline-icon" [ngClass]="getStatusClass(event.Status)">
+              <i [class]="getStatusIcon(event.Status)"></i>
             </div>
-
 
             <!-- EVENT -->
 
             <div class="timeline-event">
-
               <div class="event-main">
-
-
                 <div class="event-info">
-
                   <div class="event-title">
-
                     {{ getStatusLabel(event.Status) }}
 
                     <span class="status-code">
-
                       {{ event.Status }}
-
                     </span>
-
                   </div>
 
-
-                  <div
-                    class="event-location"
-                    *ngIf="event.Location"
-                  >
-
-                    <i
-                      class="fa-solid fa-location-dot"
-                    ></i>
+                  <div class="event-location" *ngIf="event.Location">
+                    <i class="fa-solid fa-location-dot"></i>
 
                     {{ event.Location }}
-
                   </div>
-
                 </div>
 
-
                 <div class="event-time">
-
                   <strong>
                     {{ event.TransTime }}
                   </strong>
@@ -527,83 +354,37 @@
                   <span>
                     {{ event.Transdate }}
                   </span>
-
                 </div>
-
               </div>
-
 
               <!-- REMARKS -->
 
-              <div
-                class="event-remarks"
-                *ngIf="event.Remarks"
-              >
-
-                {{ event.Remarks }}
-
+              <div class="event-remarks" *ngIf="event.displayRemarks">
+                {{ event.displayRemarks }}
               </div>
-
 
               <!-- DELIVERED TO -->
 
-              <div
-                class="delivered-to"
-                *ngIf="event.DeliveredTo"
-              >
-
-                <i
-                  class="fa-solid fa-user-check"
-                ></i>
-
-                {{ event.DeliveredTo }}
-
+              <div class="delivery-receipt" *ngIf="event.deliveryName || event.deliveryId">
+                <i class="fa-solid fa-user-check receipt-icon" aria-hidden="true"></i>
+                <div class="receipt-details">
+                  @if (event.deliveryName) {
+                    <span class="receipt-label">Delivered to</span>
+                    <strong class="receipt-name" dir="auto">{{ event.deliveryName }}</strong>
+                  }
+                  @if (event.deliveryId) {
+                    <div class="receipt-id"><span>Recipient ID</span><bdi dir="ltr">{{ event.deliveryId }}</bdi></div>
+                  }
+                </div>
               </div>
-
             </div>
-
           </div>
-
         </div>
-
       </div>
-
     </div>
-
   </section>
-
 
   <!-- ================================================= -->
   <!-- EMPTY -->
   <!-- ================================================= -->
-
-  <section
-    class="empty-state"
-    *ngIf="isEmpty()"
-  >
-
-    <div class="container">
-
-      <div class="empty-card">
-
-        <div class="empty-icon">
-
-          <i class="fa-solid fa-box-open"></i>
-
-        </div>
-
-        <h3>
-          Shipment Not Found
-        </h3>
-
-        <p>
-          We couldn't find any shipment matching your search.
-        </p>
-
-      </div>
-
-    </div>
-
-  </section>
-
 </div>

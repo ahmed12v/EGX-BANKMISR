@@ -1,17 +1,28 @@
-<div class="container mb-5">
-  <app-searching (newSearch)="closeRaiseComplaint()"></app-searching>
-@if (_abwstate.awbNum()) {
-    <app-complain
-      (addComplaint)="openRaiseComplaint($event)">
-    </app-complain>
-}
- @if (showRaiseComplaint() && selectedAwb()) {
-  <app-raise-complain 
-    id="raise-complaint"
-    [awb]="selectedAwb()!">
-  </app-raise-complain>
-}
-</div>
-<div class="top-right-component">
+<header class="portal-header">
+  <div class="portal-brand">
+    <div><strong>Shipment portal</strong><span>Tracking &amp; customer support</span></div>
+    <span class="brand-divider" aria-hidden="true"></span>
+    <img src="/EGLOGO.png" alt="Egypt Express" />
+  </div>
   <app-logout></app-logout>
-</div>   
+</header>
+<main class="portal-main">
+  <div class="container mb-5">
+    <app-searching (newSearch)="closeRaiseComplaint()"></app-searching>
+    @if (_abwstate.awbNum()) {
+      <app-complain id="shipment-complaints" style="display: block; scroll-margin-top: 24px"
+        (complaintsLoaded)="onComplaintsLoaded($event)"
+        (addComplaint)="openRaiseComplaint($event)"> </app-complain>
+    }
+    @if (showRaiseComplaint() && selectedAwb()) {
+      <app-raise-complain id="raise-complaint" [awb]="selectedAwb()!"
+        (complaintCompleted)="onComplaintCompleted($event)"> </app-raise-complain>
+    }
+  </div>
+</main>
+@if (showScrollTop()) {
+  <button class="scroll-top-btn" type="button" (click)="scrollToTop()"
+    aria-label="Back to top" title="Back to top">
+    <i class="fa-solid fa-arrow-up" aria-hidden="true"></i>
+  </button>
+}

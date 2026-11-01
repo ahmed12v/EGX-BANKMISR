@@ -1,3 +1,4 @@
+import { ChangeDetectionStrategy } from '@angular/core';
 import { Component, effect, inject, output, signal } from '@angular/core';
 import { awbStateService } from '../../../core/service/stats/awbstat';
 import { Complaint } from '../../../core/interfaces/complain';
@@ -8,6 +9,7 @@ import { pipe } from 'rxjs';
 import { SlicePipe } from '@angular/common';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-complain',
   imports: [SlicePipe],
   templateUrl: './complain.html',
@@ -15,6 +17,7 @@ import { SlicePipe } from '@angular/common';
 })
 export class Complain {
    addComplaint = output<string | null>();
+   readonly complaintsLoaded = output<string>();
 
   openRaiseComplaint(awb:string | null) {
      this.addComplaint.emit(awb);
@@ -156,6 +159,7 @@ where 1=1
     this.complaints.set([]);
     this.isEmpty.set(true);
     this.popupOpen.set(true);
+    this.complaintsLoaded.emit(form.AWBno);
     //this.cdr.detectChanges();
 
     return;
@@ -166,6 +170,7 @@ where 1=1
 
 
   this.complaints.set(newData);
+  this.complaintsLoaded.emit(form.AWBno);
 
   this.isEmpty.set(false);
 

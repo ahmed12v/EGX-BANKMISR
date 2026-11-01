@@ -1,151 +1,34 @@
-.user-menu {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-/* Main Button */
-.user-menu-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  border-radius: 12px;
-  transition: all 0.2s ease;
-}
-
-.user-menu-btn:hover {
-  background: rgba(234, 91, 35, 0.08);
-}
-
-/* Avatar */
-.user-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-
-  display: flex;
+:host { display: block; flex-shrink: 0; }
+.signout-button {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-
-  background: var(--secondary-color);
-  color: var(--text-white);
-
-  font-size: 16px;
-
-  transition: all 0.2s ease;
-}
-
-.user-menu-btn:hover .user-avatar {
-  background: var(--primary-color);
-}
-
-/* Arrow */
-.menu-arrow {
-  color: var(--text-secondary);
-  font-size: 11px;
-
-  transition: transform 0.2s ease;
-}
-
-.menu-arrow.rotate {
-  transform: rotate(180deg);
-}
-
-/* Dropdown */
-.user-dropdown {
-  position: absolute;
-  top: calc(100% + 10px);
-  right: 0;
-
-  min-width: 170px;
-
-  background: var(--background-color);
-
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
-
-  padding: 6px;
-
-  box-shadow:
-    0 10px 25px rgba(24, 35, 56, 0.12),
-    0 4px 8px rgba(24, 35, 56, 0.05);
-
-  z-index: 1000;
-
-  animation: dropdownIn 0.18s ease-out;
-}
-
-/* Small arrow */
-.user-dropdown::before {
-  content: "";
-
-  position: absolute;
-  top: -6px;
-  right: 17px;
-
-  width: 11px;
-  height: 11px;
-
-  background: var(--background-color);
-
-  border-left: 1px solid var(--border-color);
-  border-top: 1px solid var(--border-color);
-
-  transform: rotate(45deg);
-}
-
-/* Logout */
-.logout-btn {
-  width: 100%;
-
-  display: flex;
-  align-items: center;
-  gap: 12px;
-
-  padding: 11px 12px;
-
-  border: none;
+  gap: 8px;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid #e3e7ee;
   border-radius: 8px;
-
-  background: transparent;
-
-  color: var(--text-primary);
-
-  font-size: 14px;
+  background: #fff;
+  color: #526075;
+  font-size: 12px;
   font-weight: 600;
-
+  white-space: nowrap;
   cursor: pointer;
-
-  transition: all 0.2s ease;
+  transition: background .2s, color .2s, border-color .2s;
 }
-
-.logout-btn i {
-  color: var(--primary-color);
-  font-size: 15px;
+.signout-button i { font-size: 14px; }
+.signout-button:hover {
+  background: #fff4ed;
+  border-color: #f5d4c2;
+  color: var(--primary-color-dark);
 }
-
-.logout-btn:hover {
-  background: rgba(234, 91, 35, 0.08);
-  color: var(--primary-color);
+.signout-button:focus-visible {
+  outline: 3px solid var(--primary-color);
+  outline-offset: 3px;
 }
-
-.logout-btn:hover i {
-  transform: translateX(2px);
+@media (max-width: 400px) {
+  .signout-button { padding: 0 10px; gap: 6px; }
 }
-
-/* Animation */
-@keyframes dropdownIn {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@media (prefers-reduced-motion: reduce) {
+  .signout-button { transition: none; }
 }

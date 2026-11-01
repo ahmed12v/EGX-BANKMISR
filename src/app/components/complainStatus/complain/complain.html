@@ -3,9 +3,9 @@
   <div class="section-header">
     <div class="header-content">
       <span class="header-line"></span>
-      <h3>Complaint Overview</h3>
+      <h3>Shipment complaints</h3>
     </div>
-    <button class="add-complaint-btn" type="button" title="Add Complaint"
+    <button class="add-complaint-btn" type="button" title="Add Complaint" aria-label="Add Complaint"
     (click)="openRaiseComplaint(staeservice.awbNum())">
       <span>+</span>
     </button>
@@ -20,10 +20,10 @@
           <tr>
           <th>Complaint Reg No</th>
           <th>Date Logged</th>
-          <th>Associated Airway Bill</th>
-          <th>Complainant Core Issue Statement</th>
-          <th>Root Cause Category</th>
-          <th>Lifecycle Status</th>
+          <th>AWB number</th>
+          <th>Complaint</th>
+          <th>Category</th>
+          <th>Status</th>
         </tr>
       </thead>
 
@@ -118,14 +118,14 @@
           </div>
 
           <div class="detail-item">
-            <span class="detail-label">Associated Airway Bill</span>
+            <span class="detail-label">AWB number</span>
             <span class="detail-value highlight">
               {{ selectedComplaint()?.AirwayBillNo }}
             </span>
           </div>
 
           <div class="detail-item">
-            <span class="detail-label">Lifecycle Status</span>
+            <span class="detail-label">Status</span>
 
             <span class="status-badge modal-status">
               {{ selectedComplaint()?.Status }}

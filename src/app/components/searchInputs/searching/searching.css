@@ -651,7 +651,7 @@
 .results-section {
   position: relative;
 
-  margin-top: -45px;
+  margin-top: 0;
 
   padding-bottom: 60px;
 }
@@ -902,6 +902,21 @@
 
   color: #9aa2b1;
 }
+
+.sender-address {
+  margin: 6px 0 0;
+  color: #7b8798;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.receiver-details {
+  min-width: 0;
+  flex: 1;
+}
+
 
 .info-box strong {
   display: block;
@@ -1415,3 +1430,4 @@
   color: #9aa2b1;
   font-size: 11px;
 }
+.delivery-receipt{display:flex;align-items:flex-start;gap:12px;margin-top:14px;padding:14px 16px;border:1px solid #dcece3;border-radius:10px;background:#f5faf7}.receipt-icon{display:grid;place-items:center;flex-shrink:0;width:32px;height:32px;background:#e6f3eb;border-radius:8px;color:#25824c;font-size:14px}.receipt-details{min-width:0;flex:1}.receipt-label{display:block;font-size:10px;font-weight:600;color:#62756a;margin-bottom:4px}.receipt-name{display:block;font-size:13px;font-weight:650;line-height:1.6;color:#182338;overflow-wrap:anywhere}.receipt-id{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 10px;margin-top:6px;font-size:12px}.receipt-id>span{font-size:11px;color:#6b7280}.receipt-id bdi{font-weight:500;color:#475569;letter-spacing:.3px;overflow-wrap:anywhere}@media(max-width:480px){.delivery-receipt{padding:12px;gap:10px}.receipt-name{font-size:12px}}

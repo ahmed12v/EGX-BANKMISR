@@ -4,3 +4,44 @@
   right: 24px;
   z-index: 1000;
 }
+
+.scroll-top-btn {
+  position: fixed;
+  right: max(24px, env(safe-area-inset-right));
+  bottom: max(24px, env(safe-area-inset-bottom));
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, .3);
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(24, 35, 56, .18);
+  font-size: 16px;
+  cursor: pointer;
+  transition: background .2s ease, transform .2s ease;
+}
+
+.scroll-top-btn:hover {
+  background: var(--primary-color-dark);
+  transform: translateY(-2px);
+}
+
+.scroll-top-btn:focus-visible {
+  outline: 3px solid var(--secondary-color);
+  outline-offset: 3px;
+}
+
+@media (max-width: 576px) {
+  .scroll-top-btn {
+    right: max(16px, env(safe-area-inset-right));
+    bottom: max(16px, env(safe-area-inset-bottom));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-top-btn { transition: none; }
+}

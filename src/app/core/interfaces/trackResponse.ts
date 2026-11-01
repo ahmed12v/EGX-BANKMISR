@@ -33,6 +33,7 @@ export interface ShipmentInformation {
   ProductType: any
   Receiver: string
   Sender: string
+  Shipper?: string
   ServiceType: any
   ShipperDetails: string
   ShipperRef: any

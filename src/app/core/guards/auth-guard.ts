@@ -10,8 +10,8 @@ export const authGuard: CanActivateFn = () => {
     return router.createUrlTree(["/login"]);
   }
   // Check user data
-  if (!userData.UserID || !userData.CoCode) {
-    localStorage.clear();
+  if (!userData.UserID || userData.CoCode?.trim().toLowerCase() !== 'dh02043') {
+    storageService.removeItem('userCredentials');
     return router.createUrlTree(["/login"]);
   }
   return true;
