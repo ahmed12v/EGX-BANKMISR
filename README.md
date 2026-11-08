@@ -6,11 +6,6 @@ password : CRM12345
 
 -------------work 
 prompit:--------
-تمام عشان نكمل الشغل الي كما عملينه هديك الريكويست والريسبونس 
-تغمل اللوحيك 
-وهنعرض ف الكومبلين كل الكومبلينز معادا الي BANK REQUEST 
-الي احنا غملينهاف ال update request 
-اكيد فاكر وفاهم 
 ---------------------------------------------
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.1.2.
