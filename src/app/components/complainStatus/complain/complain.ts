@@ -1,5 +1,6 @@
+import { isUpdateDone, isUpdateRequestCategory } from '../../../core/interfaces/update-request-category';
 import { ChangeDetectionStrategy } from '@angular/core';
-import { Component, effect, inject, output, signal } from '@angular/core';
+import { Component, computed, effect, inject, output, signal } from '@angular/core';
 import { awbStateService } from '../../../core/service/stats/awbstat';
 import { Complaint } from '../../../core/interfaces/complain';
 import { complainService } from '../../../core/service/complain';
@@ -17,6 +18,7 @@ import { SlicePipe } from '@angular/common';
 })
 export class Complain {
    addComplaint = output<string | null>();
+   updateLocation = output<string | null>();
    readonly complaintsLoaded = output<string>();
 
   openRaiseComplaint(awb:string | null) {
@@ -40,6 +42,12 @@ export class Complain {
 
   }
   complaints = signal<Complaint[] | null>(null)
+  isUpdateRequest(item: Complaint | null): boolean {
+    return isUpdateRequestCategory(item?.RootCause);
+  }
+  updateRequestStatus(item: Complaint): string { return isUpdateDone(item.StatusCode) ? 'Update Done' : 'Under Review'; }
+  readonly complaintRows = computed(() => (this.complaints() ?? []).filter(item => !this.isUpdateRequest(item)));
+  readonly updateRows = computed(() => (this.complaints() ?? []).filter(item => this.isUpdateRequest(item)));
 
   private _compliantService = inject(complainService);
   private _storgeSer = inject(StorageService);
@@ -96,7 +104,8 @@ select
     AWBNO as AirwayBillNo,
     Remarks,
     rootname as RootCause,
-    StatusDescription as Status
+    StatusDescription as Status,
+    Status as StatusCode
 from ComplaintRegView
 where 1=1
 `;

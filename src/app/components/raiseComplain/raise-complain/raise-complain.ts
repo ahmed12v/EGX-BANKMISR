@@ -6,6 +6,7 @@ import { StorageService } from '../../../admin/service/storgeService';
 import { addComplainService } from '../../../core/service/raiseComplain';
 import { ComplaintRequest, CustomerDetails, masterList, masterListResponse } from '../../../core/interfaces/raiseComplain';
 import { errorContext } from 'rxjs/internal/util/errorContext';
+import { UPDATE_REQUEST_CODE } from '../../../core/interfaces/update-request-category';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -21,6 +22,25 @@ export class RaiseComplain implements OnInit{
     this.getMyDetials()
   }
   awb = input<string>('');
+  readonly mode = input<'complaint' | 'location'>('complaint');
+  private requestCategory() {
+    return this.selectors()?.find(item => item.cl_CodeID?.trim().toUpperCase() === UPDATE_REQUEST_CODE);
+  }
+  constructor() {
+    effect(() => {
+      const isLocation = this.mode() === 'location';
+      const category = this.requestCategory();
+      const control = this.complaintForm.controls.ComplaintData.controls.cl_Root;
+      if (isLocation) {
+        control.setValue(category?.cl_CodeID ?? '');
+        control.disable();
+      } else {
+        control.enable();
+        control.setValue('Select a classification…');
+      }
+      this.submitError.set('');
+    });
+  }
   readonly complaintCompleted = output<string>();
   readonly isSubmitting = signal(false);
   readonly submitError = signal('');
@@ -169,6 +189,8 @@ getMyDetials(){
 resetAll(){
  // Reset form
   this.complaintForm.reset();
+  const categoryControl = this.complaintForm.controls.ComplaintData.controls.cl_Root;
+  categoryControl.setValue(this.mode() === 'location' ? this.requestCategory()?.cl_CodeID ?? '' : 'Select a classification…');
 
   // Load fresh data
   this.getNumber();
@@ -210,6 +232,14 @@ complaintForm = this.fb.group({
 CreateComplain(){
   if (this.isSubmitting() || this.openpopupafterCreation() || !this.awb()) return;
   this.submitError.set('');
+  if (this.mode() === 'location') {
+    const category = this.requestCategory();
+    if (!category) {
+      this.submitError.set('The BANK REQUEST category is currently unavailable. Please try again later.');
+      return;
+    }
+    this.complaintForm.controls.ComplaintData.controls.cl_Root.setValue(category.cl_CodeID);
+  }
   const userCradentional = this._storgeData.getItem('userCredentials');
   const account = this.accountDetails();
 
@@ -253,7 +283,9 @@ CreateComplain(){
 
   if(this.complaintForm.valid){
     this.isSubmitting.set(true);
-    this._raiseService.addComplainNow(this.complaintForm.value as ComplaintRequest)
+    const request = this.complaintForm.value as ComplaintRequest;
+    request.ComplaintData.cl_Root = this.complaintForm.controls.ComplaintData.controls.cl_Root.value ?? '';
+    this._raiseService.addComplainNow(request)
     .pipe(finalize(() => this.isSubmitting.set(false))).subscribe({
       next:res=>{
         this.complaincreatingNumber.set(res.BookingNo)

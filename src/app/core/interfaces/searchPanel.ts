@@ -1,3 +1,24 @@
+export interface ShipperReferenceMatch {
+  AWBNo: string;
+  Dated: string;
+  ShipperRef: string;
+  Consignee: string;
+  ConsigneePhone: string;
+}
+
+export interface HelpDataRequest {
+  Database: string;
+  SQL: string;
+  UserID: string;
+  UserPwd: string;
+}
+
+export interface HelpDataResponse {
+  Code: string;
+  Description: string;
+  JasonHelpData: string;
+}
+
 export interface ShipmentDetails {
   AWBNo: string;
   AccountNo: string;
@@ -54,7 +75,7 @@ export interface TrackingResponseSearchawb {
 
 export interface searchPanelReq{
     AccessCode:string,
-    ActiveDataBase:string,
+    ActiveDataBase:string | null,
     FilterCondition:string,
     FilterFinal:string,
     FilterMid:string,

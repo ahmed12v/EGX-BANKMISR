@@ -1,4 +1,6 @@
-import { computed, ElementRef, viewChild } from '@angular/core';
+import { computed, DestroyRef, ElementRef, viewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntil } from 'rxjs';
 import { LoadingService } from '../../../core/service/spinner';
 import { ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -6,9 +8,9 @@ import { Component, EventEmitter, inject, Output, signal } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { trackingNow } from '../../../core/service/tracking';
 import { StorageService } from '../../../admin/service/storgeService';
-import { TrackInfoRes, TrackList } from '../../../core/interfaces/trackResponse';
-import { ShipmentDetails } from '../../../core/interfaces/searchPanel';
+import { ShipmentDetails, ShipperReferenceMatch } from '../../../core/interfaces/searchPanel';
 import { awbStateService } from '../../../core/service/stats/awbstat';
+import { TrackingSession } from '../../../core/service/stats/tracking-session';
 interface TrackingEvent {
   DeliveredTo: string;
   Location: string;
@@ -42,7 +44,7 @@ interface Shipment {
   selector: 'app-searching',
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './searching.html',
-  styleUrl: './searching.css',
+  styleUrls: ['./searching.css', './tracking-results.css'],
 })
 export class Searching {
   readonly loading = inject(LoadingService);
@@ -110,7 +112,7 @@ export class Searching {
       PE: 'Pickup Exception',
     };
 
-    return statuses[status] || 'Shipment Update';
+    return statuses[(status ?? '').trim().toUpperCase()] || 'Shipment Update';
   }
 
   getStatusIcon(status: string): string {
@@ -172,7 +174,7 @@ export class Searching {
       PE: 'fa-solid fa-triangle-exclamation',
     };
 
-    return icons[status] || 'fa-solid fa-circle-info';
+    return icons[(status ?? '').trim().toUpperCase()] || 'fa-solid fa-circle-info';
   }
 
   getStatusClass(status: string): string {
@@ -234,15 +236,17 @@ export class Searching {
       PE: 'status-warning',
     };
 
-    return classes[status] || 'status-default';
+    return classes[(status ?? '').trim().toUpperCase()] || 'status-default';
   }
   //#endregion
   //#region inhection
   @Output() newSearch = new EventEmitter<void>();
   _trackingService = inject(trackingNow);
   _storgeService = inject(StorageService);
-  trackInfoo = signal<TrackInfoRes | null>(null);
-  trackingList = signal<TrackList[] | null>(null);
+  private readonly session = inject(TrackingSession);
+  private readonly destroyRef = inject(DestroyRef);
+  readonly trackInfoo = this.session.trackInfo;
+  readonly trackingList = this.session.trackingList;
   readonly trackingEvents = computed(() => (this.trackingList() ?? []).map(event => {
     const clean = (value: string) => (value ?? '')
       .replace(/&(?:#x20|#32|nbsp);/gi, ' ').replace(/\*\*/g, '').replace(/\s+/g, ' ').trim();
@@ -260,30 +264,141 @@ export class Searching {
     };
   }));
   _storgeSer = inject(StorageService);
-  awbSearch = signal<ShipmentDetails[] | null>(null);
+  readonly awbSearch = this.session.awbSearch;
   readonly senderAddress = computed(() => {
     const details = this.trackInfoo()?.TrackInfo[0]?.ShipmentInformation.ShipperDetails ?? '';
     return details.replace(/^\s*bank\s+misr\s*(?:,|$)/i, '')
       .split(',').map(part => part.trim()).filter(Boolean).join(', ');
   });
-  readonly receiverAddress = computed(() => {
-    const details = this.trackInfoo()?.TrackInfo[0]?.ShipmentInformation.ConsigneeDetails ?? '';
-    const parts = details.split(',').map(part => part.trim());
-    parts.shift();
-    return [...new Set(parts.filter(part => part && !/^\+?[\d\s()-]{7,}$/.test(part)))].join(', ');
+  readonly receiverAddressLines = computed(() => {
+    const shipment = this.trackInfoo()?.TrackInfo[0]?.ShipmentInformation;
+    const parts = (shipment?.ConsigneeDetails ?? '').split(/[,،\r\n]+/).map(part => part.trim()).filter(Boolean);
+    const normalize = (value: string) => value.trim().replace(/\s+/g, ' ').toLowerCase();
+    if (parts.length && normalize(parts[0]) === normalize(shipment?.Receiver ?? '')) parts.shift();
+    const lines = parts.filter(part => !/^\+?[\d\s()-]{7,}$/.test(part))
+      .flatMap(part => part.split(/\s+[-–—]\s+/));
+    return [...new Set(lines)];
   });
-  isEmpty = signal(false);
-  isNotFound = signal(false);
+  readonly receiverPhone = computed(() => {
+    const shipment = this.trackInfoo()?.TrackInfo[0]?.ShipmentInformation;
+    if (!shipment) return '';
+    const searchResult = this.awbSearch()?.find(row => row.AWBNo === shipment.AWBNo);
+    const reference = this.referenceMatches().find(row => row.AWBNo === shipment.AWBNo);
+    const phone = [shipment.ConsigneeMobile, shipment.ConsigneePhone,
+      searchResult?.ConsigneeMobile, searchResult?.ConsigneePhone, reference?.ConsigneePhone]
+      .map(value => String(value ?? '').trim()).find(Boolean);
+    const raw = phone || (shipment.ConsigneeDetails ?? '').split(/[,،\r\n]+/).map(part => part.trim())
+      .filter(part => /^\+?[\d\s()/-]{7,}$/.test(part)).join(' / ');
+    const numbers = raw.split(/[,;/|\n]+/).map(value => {
+      let number = value.trim();
+      const spaced = number.split(/\s+/);
+      if (spaced.length > 1 && spaced.every(part => part === spaced[0]) && /^\+?\d{7,15}$/.test(spaced[0])) number = spaced[0];
+      const digits = number.replace(/[^\d+]/g, '');
+      for (let size = 7; size <= 15 && size * 2 <= digits.length; size++) {
+        const unit = digits.slice(0, size);
+        if (digits.length % size === 0 && unit.repeat(digits.length / size) === digits) return unit;
+      }
+      return number;
+    }).filter(Boolean);
+    const seen = new Set<string>();
+    return numbers.filter(number => {
+      const key = number.replace(/[^\d]/g, '').replace(/^(?:0020|20)(?=1\d{9}$)/, '0');
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    }).join(' / ');
+  });
+  readonly receiverPhoneLink = computed(() => {
+    if (this.receiverPhone().includes(' / ')) return null;
+    const phone = this.receiverPhone().replace(/[^\d+]/g, '');
+    return /^\+?\d{7,15}$/.test(phone) ? `tel:${phone}` : null;
+  });
+  readonly receiverPhones = computed(() => this.receiverPhone().split(' / ').filter(Boolean).map(number => {
+    const digits = number.replace(/[^\d+]/g, '');
+    return { number, href: /^\+?\d{7,15}$/.test(digits) ? `tel:${digits}` : null };
+  }));
+
+  readonly isEmpty = this.session.isEmpty;
+  readonly isNotFound = this.session.isNotFound;
   _awbState = inject(awbStateService);
   //#endregion
   //#region searching Design
-  searchType = signal<'awb' | 'shipperReference'>('awb');
-  searchValue = signal('');
-  readonly submittedSearch = signal<{ type: 'awb' | 'shipperReference'; value: string }>({
-    type: 'awb',
-    value: '',
+  readonly searchType = this.session.searchType;
+  readonly searchValue = this.session.searchValue;
+  readonly submittedSearch = this.session.submittedSearch;
+  readonly searchError = this.session.searchError;
+  readonly referenceMatches = this.session.referenceMatches;
+  readonly selectedShipperReference = this.session.selectedShipperReference;
+  readonly shipmentShipperReference = computed(() => {
+    const reference = this.trackInfoo()?.TrackInfo[0]?.ShipmentInformation.ShipperRef;
+    return String(reference ?? '').trim() || this.selectedShipperReference();
   });
-  readonly searchError = signal(false);
+  readonly referenceDialog = viewChild<ElementRef<HTMLDialogElement>>('referenceDialog');
+
+  closeReferenceDialog(): void {
+    this.referenceDialog()?.nativeElement.close();
+    this.searchInput()?.nativeElement.focus();
+  }
+
+  selectReferenceMatch(match: ShipperReferenceMatch): void {
+    this.closeReferenceDialog();
+    this.completeShipperReference(match.ShipperRef);
+    this.trackingNowByAwb(match.AWBNo);
+  }
+
+  private completeShipperReference(reference: string | null | undefined): void {
+    const fullReference = String(reference ?? '').trim();
+    this.selectedShipperReference.set(fullReference);
+    if (fullReference) {
+      this.searchType.set('shipperReference');
+      this.searchValue.set(fullReference);
+      this.submittedSearch.set({ type: 'shipperReference', value: fullReference });
+    }
+  }
+
+  private searchShortReference(reference: string): void {
+    const credentials = this._storgeService.getItem('userCredentials');
+    if (!credentials?.UserID || !credentials?.UserPWD) {
+      this.searchError.set(true);
+      return;
+    }
+    // Treat the reference as a literal SQL LIKE substring. if > 12 characters, it will be handled by shiperRefSearch instead.
+    const literal = reference.replace(/'/g, "''").replace(/\[/g, '[[]')
+      .replace(/%/g, '[%]').replace(/_/g, '[_]');
+    this._trackingService.getHelpData({
+      Database: 'integraontrack',
+      SQL: `select Top 100 AWBNo, convert(varchar, Billdate, 5) as Dated, ShipperRef, Origin, Destination, Shipper, Consignee, ConsigneePhone From AWBActive where 1=1 and isnull(ShipperRef,'')<>'' and AccountNo = 'dh02043' and ShipperRef like N'${literal}%' Order by Billdate Desc`,
+      UserID: credentials.UserID,
+      UserPwd: credentials.UserPWD,
+    }).pipe(takeUntil(this.session.reset$), takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: response => {
+        if (response.Code !== '1') {
+          this.searchError.set(true);
+          return;
+        }
+        try {
+          const data: unknown = JSON.parse(response.JasonHelpData);
+          if (!Array.isArray(data) || !data.every(row => row && typeof row.AWBNo === 'string' && row.AWBNo.trim())) {
+            this.searchError.set(true);
+            return;
+          }
+          this.referenceMatches.set(data);
+          if (!data.length) {
+            this.isEmpty.set(true);
+            return;
+          }
+          if (data.length === 1) {
+            this.selectReferenceMatch(data[0]);
+            return;
+          }
+          this.referenceDialog()?.nativeElement.showModal();
+        } catch {
+          this.searchError.set(true);
+        }
+      },
+      error: () => this.searchError.set(true),
+    });
+  }
   readonly searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
 
   editSearch() {
@@ -321,6 +436,9 @@ export class Searching {
       return;
     }
     this.submittedSearch.set({ type: this.searchType(), value });
+    this.closeReferenceDialog();
+    this.referenceMatches.set([]);
+    this.selectedShipperReference.set('');
     this.searchError.set(false);
     this._awbState.clear();
     // Clear previous search result
@@ -336,6 +454,8 @@ export class Searching {
 
     if (this.searchType() === 'awb') {
       this.trackingNowByAwb(value);
+    } else if (value.length < 8) {
+      this.searchShortReference(value);
     } else {
       this.shiperRefSearch(value);
     }
@@ -354,16 +474,17 @@ export class Searching {
   //#region trackNow
 
   refreshShipment(awb: string) {
-    this.submittedSearch.set({ type: 'awb', value: awb });
+    const previous = this.submittedSearch();
+    const search = previous.type === 'shipperReference' ? previous : { type: 'awb' as const, value: awb };
+    this.submittedSearch.set(search);
     this.searchError.set(false);
     this._awbState.clear();
     this.trackInfoo.set(null);
     this.trackingList.set(null);
-    this.awbSearch.set(null);
     this.isEmpty.set(false);
     this.isNotFound.set(false);
-    this.searchType.set('awb');
-    this.searchValue.set(awb);
+    this.searchType.set(search.type);
+    this.searchValue.set(search.value);
     this.trackingNowByAwb(awb);
   }
 
@@ -376,7 +497,8 @@ export class Searching {
       ActiveDataBase: 'integraontrack',
     });
     if (this.trackingForm.valid) {
-      this._trackingService.trackawb(this.trackingForm.value).subscribe({
+      this._trackingService.trackawb(this.trackingForm.value)
+        .pipe(takeUntil(this.session.reset$), takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (res) => {
           if (res.code === '-1' || !res.TrackInfo?.length) {
             this.trackInfoo.set(null);
@@ -562,7 +684,8 @@ export class Searching {
       Status: '',
     };
 
-    this._trackingService.trackByshipperref(request).subscribe({
+    this._trackingService.trackByshipperref(request)
+      .pipe(takeUntil(this.session.reset$), takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => {
         this.awbSearch.set([]);
 
@@ -584,6 +707,18 @@ export class Searching {
 
         this.isEmpty.set(false);
 
+        if (shipperReference.length <= 12 && newData.length > 1) {
+          this.referenceMatches.set(newData.map(shipment => ({
+            AWBNo: shipment.AWBNo,
+            Dated: shipment.PickupDate,
+            ShipperRef: shipment.ShipperRef,
+            Consignee: shipment.Consignee,
+            ConsigneePhone: shipment.ConsigneePhone,
+          })));
+          this.referenceDialog()?.nativeElement.showModal();
+          return;
+        }
+
         // =========================
         // GET AWB
         // =========================
@@ -600,6 +735,7 @@ export class Searching {
         // TRACK USING AWB
         // =========================
 
+        this.completeShipperReference(newData[0].ShipperRef);
         this.trackingNowByAwb(awb);
       },
 
@@ -614,3 +750,4 @@ export class Searching {
   }
   //#endregion
 }
+

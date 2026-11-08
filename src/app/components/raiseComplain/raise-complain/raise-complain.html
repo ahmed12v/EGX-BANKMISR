@@ -1,148 +1,36 @@
-<div class="wrap">
+<section class="complaint-workspace" [class.location-workspace]="mode() === 'location'" aria-labelledby="complaint-title">
+  <header class="complaint-heading">
+    <div class="complaint-heading-icon"><i class="fa-solid fa-headset" aria-hidden="true"></i></div>
+    <div><span class="complaint-eyebrow">SHIPMENT SUPPORT</span><h1 id="complaint-title">{{ mode() === 'location' ? 'Update delivery location' : 'How can we help?' }}</h1><p>{{ mode() === 'location' ? 'Share the updated address or delivery instructions for this shipment.' : 'Tell us about the issue. We’ll take it from here.' }}</p></div>
+    <span class="complaint-draft"><span></span> {{ mode() === 'location' ? 'Location update' : 'New complaint' }}</span>
+  </header>
   <form [formGroup]="complaintForm" (ngSubmit)="CreateComplain()">
-  <!-- Top banner -->
-  <div class="topbar">
-    <div class="icon-badge"><i class="fa-solid fa-headset"></i></div>
-    <div>
-      <h1>Register a complaint</h1>
-      <p>Tell us what happened so our team can help with your shipment.</p>
-    </div>
-    <div class="reg-pill"><span class="dot"></span> Registration No. {{complainRgister()}}</div>
-  </div>
- 
-  
-  <div class="row g-3" formGroupName="ComplaintData">
- 
-    <!-- Left panel -->
-    <div class="col-lg-6">
-      <div class="panel">
-        <div class="panel-head dark">
-          <span class="ic"><i class="fa-solid fa-user"></i></span>
-          Your account details
-        </div>
-        <div class="panel-body">
- 
-          <div class="row">
-            <div class="col-sm-6 field">
-              <label><i class="fa-solid fa-hashtag"></i>Registration No.</label>
-              <input [value]="complainRgister()"  formControlName="cl_COREG" 
-              readonly type="text" class="form-control fw-semibold" 
-               style="color:var(--orange-dark)" >
-            </div>
-            <div class="col-sm-6 field">
-              <label><i class="fa-regular fa-calendar"></i>Date Lodged</label>
-              <input type="date"  class="form-control" [value]="today">
-            </div>
+    <div class="complaint-grid" formGroupName="ComplaintData">
+      <div class="complaint-editor">
+        <section class="complaint-card">
+          <header class="complaint-card-heading"><span class="complaint-step">01</span><div><h2>{{ mode() === 'location' ? 'Location details' : 'Complaint details' }}</h2><p>{{ mode() === 'location' ? 'The BANK REQUEST category is automatically selected for location updates.' : 'A few details will help our team understand the issue.' }}</p></div></header>
+          <div class="complaint-fields">
+            <div class="complaint-field"><label for="complaint-category">{{ mode() === 'location' ? 'Request category' : 'Complaint category' }}</label><select id="complaint-category" class="form-select" formControlName="cl_Root"><option value="Select a classification…" disabled>Select the type of issue</option>@for (item of selectors(); track $index) {<option [value]="item.cl_CodeID">{{ item.cl_CodeName }}</option>}</select></div>
+            <div class="complaint-field"><label for="complaint-description">{{ mode() === 'location' ? 'Updated address & instructions' : 'What happened?' }}</label><textarea id="complaint-description" class="form-control" formControlName="cl_complaint" rows="7" dir="auto" [placeholder]="mode() === 'location' ? 'Enter the new address, a nearby landmark, and any delivery instructions…' : 'Describe the shipment issue and how we can help…'" aria-describedby="complaint-description-help"></textarea><p id="complaint-description-help" class="complaint-help"><i class="fa-regular fa-lightbulb" aria-hidden="true"></i> Include relevant dates, delivery attempts, or any details that may help.</p></div>
           </div>
- 
-          <div class="row">
-            <div class="col-sm-6 field">
-              <label><i class="fa-solid fa-id-badge"></i>Account Code</label>
-              <input  type="text" class="form-control"[value]='accountDetails()?.cl_AccCode' formControlName="cl_ClientCode" readonly>
-            </div>
-            <div class="col-sm-6 field">
-              <label><i class="fa-solid fa-building"></i>Company name</label>
-              <input type="text"  class="form-control"[value]='accountDetails()?.cl_CustName' formControlName="cl_CustName" readonly>
-            </div>
-          </div>
- 
-          <div class="field">
-            <label><i class="fa-regular fa-id-card"></i>Contact name</label>
-            <input type="text" class="form-control"[value]='accountDetails()?.cl_CPerson'  formControlName="cl_cPerson" readonly>
-          </div>
- 
-          <div class="row">
-            <div class="col-sm-6 field">
-              <label><i class="fa-solid fa-phone"></i>Contact Phone No.</label>
-              <input type="tel" class="form-control" [value]='accountDetails()?.cl_CustPhone || accountDetails()?.cl_CustMobile || "" ' formControlName="cl_tel" readonly>
-            </div>
-            <div class="col-sm-6 field">
-              <label><i class="fa-regular fa-envelope"></i>Email address</label>
-              <input type="email" class="form-control" [value]='accountDetails()?.cl_CustEMail' formControlName="cl_email" readonly>
-            </div>
-          </div>
- 
-          <div class="divider-label">Incident Details</div>
- 
-          <div class="field">
-            <label><i class="fa-solid fa-file-lines"></i>What happened?</label>
-            <textarea formControlName="cl_complaint" class="form-control" rows="4" placeholder="Describe the delivery issue and how we can help."></textarea>
-            <div class="helper">Include timestamps, reference IDs, and any error codes the client shared.</div>
-          </div>
- 
-        </div>
+        </section>
+        <div class="complaint-guidance"><i class="fa-solid fa-circle-info" aria-hidden="true"></i><p>{{ mode() === 'location' ? 'Your update request will be linked to this shipment. Follow its progress in Update Requests.' : 'Your complaint will be linked to this shipment. Follow its progress in Shipment Complaints.' }}</p></div>
       </div>
+      <aside class="complaint-sidebar" aria-label="Shipment and account summary">
+        <section class="complaint-card complaint-shipment">
+          <header class="complaint-card-heading"><span class="complaint-section-icon"><i class="fa-solid fa-box" aria-hidden="true"></i></span><div><h2>Shipment summary</h2><p>The shipment you’re contacting us about.</p></div></header>
+          <dl class="complaint-summary"><div class="complaint-awb"><dt>AWB number</dt><dd dir="ltr">{{ awb() }}</dd></div><div><dt>Registration no.</dt><dd dir="ltr">{{ complainRgister() || '—' }}</dd></div><div><dt>Date</dt><dd dir="ltr">{{ today }}</dd></div></dl>
+        </section>
+        <section class="complaint-card">
+          <header class="complaint-card-heading"><span class="complaint-section-icon"><i class="fa-regular fa-building" aria-hidden="true"></i></span><div><h2>Account details</h2><p>From your company account.</p></div><i class="fa-solid fa-lock complaint-account-lock" aria-label="Read only"></i></header>
+          <dl class="complaint-summary"><div><dt>Company</dt><dd dir="auto">{{ accountDetails()?.cl_CustName || '—' }}</dd></div><div><dt>Account code</dt><dd>{{ accountDetails()?.cl_AccCode || '—' }}</dd></div><div><dt>Contact name</dt><dd dir="auto">{{ accountDetails()?.cl_CPerson || '—' }}</dd></div><div><dt>Phone</dt><dd dir="ltr">{{ accountDetails()?.cl_CustPhone || accountDetails()?.cl_CustMobile || '—' }}</dd></div><div><dt>Email</dt><dd>{{ accountDetails()?.cl_CustEMail || '—' }}</dd></div></dl>
+        </section>
+      </aside>
     </div>
- 
-    <!-- Right panel -->
-    <div class="col-lg-6">
-      <div class="panel">
-        <div class="panel-head orange">
-          <span class="ic"><i class="fa-solid fa-route"></i></span>
-          Shipment &amp; complaint details
-        </div>
-        <div class="panel-body">
- 
-          <div class="row">
-            <div class="col-sm-6 field">
-              <label><i class="fa-solid fa-plane"></i>AWB number</label>
-              <input type="text" class="form-control" [value]="awb()" readonly>
-            </div>
-            <div class="col-sm-6 field">
-              <label><i class="fa-solid fa-box" ></i>Booking reference</label>
-              <input  type="text" class="form-control" formControlName="cl_EnqRefNo" placeholder="Booking Request Code Map">
-            </div>
-          </div>
- 
-          <div class="field">
-            <label><i class="fa-solid fa-layer-group"></i>Complaint category</label>
-            <select class="form-select"  formControlName="cl_Root">
-              <option selected disabled>Select a classification…</option>
-              @for (item of selectors(); track $index) {
-                 <option [value]= item.cl_CodeID> {{item.cl_CodeName}} </option>
-              }
-             
-              
-            </select>
-          </div>
- 
-          <div class="row">
-            <div class="col-sm-5 field readonly">
-              <label><i class="fa-solid fa-lock"></i>Internal Status Code</label>
-              <input type="text" class="form-control text-center" value="Status ID" readonly>
-            </div>
-            <div class="col-sm-7 field readonly">
-              <label><i class="fa-solid fa-lock"></i>Status</label>
-              <div class="form-control d-flex align-items-center justify-content-between" style="background:var(--readonly-bg);border-style:dashed;">
-                <span>Awaiting review</span>
-                <span class="badge rounded-pill" style="background:#fde3d1;color:var(--orange-dark);font-family:'Inter',sans-serif;font-weight:700;">Pending</span>
-              </div>
-            </div>
-          </div>
- 
-          <div class="divider-label">Resolution Log</div>
- 
-          <div class="field readonly">
-            <label><i class="fa-solid fa-lock"></i>Resolution notes</label>
-            <textarea class="form-control" rows="5" placeholder="Support team updates will appear here." readonly></textarea>
-          </div>
- 
-        </div>
-      </div>
-    </div>
-  </div>
- 
-  <!-- Actions -->
-  @if (submitError()) {<p class="text-danger small" role="alert">{{ submitError() }}</p>}
-  <div class="actions">
-    <span class="note" ><i class="fa-regular fa-clock"></i>&nbsp; Review your details before submitting</span>
-    <button class="btn btn-outline-soft" (click)="resetAll()" type="button"><i class="fa-solid fa-rotate-left"></i>Reset form</button>
-    <button class="btn btn-dark-slate d-none" type="button"><i class="fa-regular fa-note-sticky"></i>Append Notes</button>
-    <button class="btn btn-primary-orange" type="submit" [disabled]="isSubmitting() || openpopupafterCreation()"><i class="fa-solid" [class.fa-spinner]="isSubmitting()" [class.fa-spin]="isSubmitting()" [class.fa-check]="!isSubmitting()"></i>{{ isSubmitting() ? "Registering…" : "Register Complaint" }}</button>
-  </div>
+    @if (submitError()) {<div class="complaint-error" role="alert"><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>{{ submitError() }}</div>}
+    <footer class="complaint-actions"><p><i class="fa-regular fa-circle-check" aria-hidden="true"></i> Review your details before submitting.</p><div><button type="button" class="complaint-reset" (click)="resetAll()" [disabled]="isSubmitting() || openpopupafterCreation()"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i>Reset form</button><button type="submit" class="complaint-submit" [disabled]="isSubmitting() || openpopupafterCreation()"><i class="fa-solid" [class.fa-spinner]="isSubmitting()" [class.fa-spin]="isSubmitting()" [class.fa-arrow-right]="!isSubmitting()" aria-hidden="true"></i>{{ isSubmitting() ? 'Submitting…' : mode() === 'location' ? 'Submit location update' : 'Register complaint' }}</button></div></footer>
   </form>
- 
-</div>
+</section>
 
 <!-- Success Modal -->
 @if (openpopupafterCreation()) {
@@ -152,14 +40,14 @@
         <span class="confirmation-icon"><i class="fa-solid fa-check" aria-hidden="true"></i></span>
         <button type="button" class="confirmation-close" (click)="finishComplaint()" aria-label="Close and view shipment"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
       </header>
-      <h2 id="complaint-success-title">Complaint registered</h2>
-      <p id="complaint-success-description">Your complaint has been submitted successfully. Keep the reference number for follow-up.</p>
+      <h2 id="complaint-success-title">{{ mode() === 'location' ? 'Update request submitted' : 'Complaint registered' }}</h2>
+      <p id="complaint-success-description">{{ mode() === 'location' ? 'Your update request has been submitted successfully. Keep the reference number for follow-up.' : 'Your complaint has been submitted successfully. Keep the reference number for follow-up.' }}</p>
       <dl class="confirmation-reference">
-        <div><dt>Complaint reference</dt><dd>{{ complaincreatingNumber() }}</dd></div>
+        <div><dt>{{ mode() === 'location' ? 'Update request reference' : 'Complaint reference' }}</dt><dd>{{ complaincreatingNumber() }}</dd></div>
         <div><dt>AWB number</dt><dd>{{ awb() }}</dd></div>
       </dl>
       <footer class="confirmation-footer">
-        <button type="button" class="confirmation-action" (click)="finishComplaint()" autofocus>View shipment &amp; complaints<i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+        <button type="button" class="confirmation-action" (click)="finishComplaint()" autofocus>{{ mode() === 'location' ? 'View shipment & update requests' : 'View shipment & complaints' }}<i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
       </footer>
     </section>
   </div>

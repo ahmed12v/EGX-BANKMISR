@@ -1,0 +1,20 @@
+  <div class="container mb-5">
+    <app-searching (newSearch)="closeRaiseComplaint()"></app-searching>
+    @if (_abwstate.awbNum()) {
+      <app-complain id="shipment-complaints" style="display: block; scroll-margin-top: 24px"
+        (complaintsLoaded)="onComplaintsLoaded($event)"
+        (addComplaint)="openRaiseComplaint($event)"
+        (updateLocation)="openRaiseComplaint($event, 'location')"> </app-complain>
+    }
+    @if (showRaiseComplaint() && selectedAwb()) {
+      <app-raise-complain id="raise-complaint" [awb]="selectedAwb()!" [mode]="supportMode()"
+        (complaintCompleted)="onComplaintCompleted($event)"> </app-raise-complain>
+    }
+  </div>
+
+@if (showScrollTop()) {
+  <button class="scroll-top-btn" type="button" (click)="scrollToTop()"
+    aria-label="Back to top" title="Back to top">
+    <i class="fa-solid fa-arrow-up" aria-hidden="true"></i>
+  </button>
+}

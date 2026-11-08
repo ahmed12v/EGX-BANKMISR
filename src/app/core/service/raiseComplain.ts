@@ -12,31 +12,31 @@ export class addComplainService{
     GetMasterlistComplain(masterrequest:masterrequest):Observable<masterList>{
         return this._http
         .post<masterList>
-        (`https://egxpress.me/IconnectSecure/IntegraOntrackService.svc/MasterList`,masterrequest)
+        (`/BANKMISR/complaint-types`,masterrequest)
     }
    //
     GetregisterNumber(registreReq:registerNumberReq):Observable<registrationNumber>{
         return this._http
         .post<registrationNumber>
-        (`https://egxpress.me/IconnectSecure/IntegraOntrackService.svc/GetNewComplaintNo`,registreReq)
+        (`/BANKMISR/complaint-number`,registreReq)
     }
     GetNewregisterNumber(registreReq:registerNumberReq):Observable<registrationNumber>{
         return this._http
         .post<registrationNumber>
-        (`https://egxpress.me/IconnectSecure/IntegraOntrackService.svc/GetNewComplaintNo`,registreReq)
+        (`/BANKMISR/complaint-number`,registreReq)
     }
     //
 
     GetCustomerDetials(customerDetialsReq:customerDetialsReq):Observable<CustomerDetailsCome>{
         return this._http
         .post<CustomerDetailsCome>
-        (`https://egxpress.me/IconnectSecure/IntegraOntrackService.svc/GetAccountDetails`,customerDetialsReq)
+        (`/BANKMISR/account-details`,customerDetialsReq)
     }
     //
      addComplainNow(ComplaintRequest:ComplaintRequest):Observable<RootDone>{
         return this._http
         .post<RootDone>
-        (`https://egxpress.me/IconnectSecure/IntegraOntrackService.svc/CreateComplaint`,ComplaintRequest)
+        (`/BANKMISR/create-complaint`,ComplaintRequest)
     }
 
 }

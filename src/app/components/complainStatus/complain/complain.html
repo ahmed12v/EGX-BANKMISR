@@ -1,68 +1,37 @@
-@if(staeservice.awbNum()){
-<div class="complaint-overview">
-  <div class="section-header">
-    <div class="header-content">
-      <span class="header-line"></span>
-      <h3>Shipment complaints</h3>
-    </div>
-    <button class="add-complaint-btn" type="button" title="Add Complaint" aria-label="Add Complaint"
-    (click)="openRaiseComplaint(staeservice.awbNum())">
-      <span>+</span>
-    </button>
-    
+@if (staeservice.awbNum()) {
+  <div class="shipment-support-actions support-toolbar">
+    <button class="support-action complaint-action" type="button" (click)="openRaiseComplaint(staeservice.awbNum())"><i class="fa-regular fa-comment-dots" aria-hidden="true"></i>Add Complaint</button>
+    <button class="support-action location-action" type="button" (click)="updateLocation.emit(staeservice.awbNum())"><i class="fa-solid fa-location-dot" aria-hidden="true"></i>Update Location</button>
   </div>
-
-  <div class="table-wrapper">
-    <table class="complaint-table">
-     
-        @if (complaints()?.length != 0 || null) {
-           <thead>
-          <tr>
-          <th>Complaint Reg No</th>
-          <th>Date Logged</th>
-          <th>AWB number</th>
-          <th>Complaint</th>
-          <th>Category</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        @for (item of complaints(); track item.CoReg) {
-        <tr
-        class="complaint-row"
-      (click)="openComplaintDetails(item)">
-          <td class="reg-no">{{ item.CoReg }}</td>
-          <td>{{ item.ComplaintDate }}</td>
-          <td class="awb">{{ item.AirwayBillNo }}</td>
-          <td>{{ item.Complaint.length > 80 
-        ? (item.Complaint | slice:0:80) + '...'
-        : item.Complaint }}</td>
-          <td> {{ item.RootCause.trim() }}</td>
-          <td>
-            <span class="status-badge">{{item.Status}}</span>
-          </td>
-        </tr>
-      }
-      </tbody>
-        }
-        @else{
-          <div class="no-complaints">
-  <div class="no-complaints-icon">
-    <i class="fa-solid fa-circle-check"></i>
-  </div>
-
-  <h4>No Complaints Found</h4>
-
-  <p>
-    There are no complaints registered for this shipment.
-  </p>
-</div>
-        }
-        
-    </table>
-  </div>
-</div>
+  @for (section of [{ title: 'Shipment Complaints', rows: complaintRows(), update: false }, { title: 'Update Requests', rows: updateRows(), update: true }]; track section.title) {
+    @if (section.rows.length > 0) {
+      <section class="complaint-overview support-card" [class.update-card]="section.update" [attr.aria-label]="section.title">
+        <header class="section-header">
+          <div class="header-content"><span class="header-line"></span><h3>{{ section.title }}</h3><span class="support-count">{{ section.rows.length }}</span></div>
+          @if (section.update) {
+            <button class="support-action location-action" type="button" (click)="updateLocation.emit(staeservice.awbNum())">Update Location</button>
+          } @else {
+            <button class="support-action complaint-action" type="button" (click)="openRaiseComplaint(staeservice.awbNum())">Add Complaint</button>
+          }
+        </header>
+        <div class="table-wrapper"><table class="complaint-table">
+          <thead><tr><th>{{ section.update ? 'Update Request No.' : 'Complaint Reg No' }}</th><th>Date Logged</th><th>AWB number</th><th>{{ section.update ? 'Update request' : 'Complaint' }}</th><th>Category</th><th>Status</th></tr></thead>
+          <tbody>
+            @for (item of section.rows; track item.CoReg) {
+              <tr class="complaint-row" (click)="openComplaintDetails(item)">
+                <td class="reg-no">{{ item.CoReg }}</td><td>{{ item.ComplaintDate }}</td><td class="awb">{{ item.AirwayBillNo }}</td>
+                <td>{{ item.Complaint.length > 80 ? (item.Complaint | slice:0:80) + '...' : item.Complaint }}</td>
+                <td>{{ section.update ? 'Update Request' : item.RootCause.trim() }}</td><td><span class="status-badge">{{ section.update ? updateRequestStatus(item) : item.Status }}</span></td>
+              </tr>
+            }
+          </tbody>
+        </table></div>
+      </section>
+    }
+  }
+  @if (complaints() !== null && complaintRows().length === 0 && updateRows().length === 0) {
+    <p class="support-empty">No complaints or update requests for this shipment.</p>
+  }
 }
 @if (selectedComplaint()) {
   <div class="complaint-modal-backdrop" (click)="closeComplaintDetails()">
@@ -79,9 +48,9 @@
           <span class="modal-title-line"></span>
 
           <div>
-            <h3>Complaint Details</h3>
+            <h3>{{ isUpdateRequest(selectedComplaint()) ? 'Update Request Details' : 'Complaint Details' }}</h3>
             <span class="modal-subtitle">
-              Complaint Reg No. {{ selectedComplaint()?.CoReg }}
+              {{ isUpdateRequest(selectedComplaint()) ? 'Update Request No.' : 'Complaint Reg No.' }} {{ selectedComplaint()?.CoReg }}
             </span>
           </div>
         </div>
@@ -104,7 +73,7 @@
         <div class="details-grid">
 
           <div class="detail-item">
-            <span class="detail-label">Complaint Reg No</span>
+            <span class="detail-label">{{ isUpdateRequest(selectedComplaint()) ? 'Update Request No.' : 'Complaint Reg No' }}</span>
             <span class="detail-value highlight">
               {{ selectedComplaint()?.CoReg }}
             </span>
@@ -124,13 +93,15 @@
             </span>
           </div>
 
+          @if (selectedComplaint()) {
           <div class="detail-item">
             <span class="detail-label">Status</span>
 
             <span class="status-badge modal-status">
-              {{ selectedComplaint()?.Status }}
+              {{ isUpdateRequest(selectedComplaint()) ? updateRequestStatus(selectedComplaint()) : selectedComplaint()?.Status }}
             </span>
           </div>
+          }
 
         </div>
 
@@ -140,7 +111,7 @@
 
           <div class="detail-section-title">
             <i class="fa-regular fa-message"></i>
-            <span>Complaint</span>
+            <span>{{ isUpdateRequest(selectedComplaint()) ? 'Update request' : 'Complaint' }}</span>
           </div>
 
           <div class="detail-content">
@@ -159,7 +130,7 @@
           </div>
 
           <div class="detail-content">
-            {{ selectedComplaint()?.RootCause?.trim() }}
+            {{ isUpdateRequest(selectedComplaint()) ? 'Update Request' : selectedComplaint()?.RootCause?.trim() }}
           </div>
 
         </div>

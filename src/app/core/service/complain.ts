@@ -12,6 +12,6 @@ export class complainService{
     getcomplainStatus(formsearch:queryComeٍSearch):Observable<ComplaintResponse>{
         return this.http
         .post<ComplaintResponse>
-        (`https://egxpress.me/IconnectSecure/IntegraOntrackService.svc/SearchQuery`,formsearch)
+        (`/BANKMISR/complaints`,formsearch)
     }
 }

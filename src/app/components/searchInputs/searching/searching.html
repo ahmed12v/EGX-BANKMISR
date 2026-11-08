@@ -1,4 +1,29 @@
 <div class="tracking-page">
+  <dialog #referenceDialog class="reference-dialog" aria-labelledby="reference-title"
+    (click)="$event.target === referenceDialog && closeReferenceDialog()">
+    <div class="reference-heading">
+      <div>
+        <h2 id="reference-title">Select a shipment</h2>
+        <p>{{ referenceMatches().length }} matches for {{ submittedSearch().value }}</p>
+      </div>
+      <button type="button" class="reference-close" aria-label="Close shipment selection" (click)="closeReferenceDialog()">×</button>
+    </div>
+    <div class="reference-results">
+      @for (match of referenceMatches(); track $index) {
+        <button type="button" class="reference-match" (click)="selectReferenceMatch(match)">
+          <span class="reference-numbers">
+            <span><small>Shipper reference</small><strong dir="ltr">{{ match.ShipperRef }}</strong></span>
+            <span><small>AWB number</small><strong dir="ltr">{{ match.AWBNo }}</strong></span>
+          </span>
+          <span class="reference-consignee">
+            <span><small>Consignee</small><span dir="auto">{{ match.Consignee || '—' }}</span></span>
+            <span><small>Phone number</small><span dir="ltr">{{ match.ConsigneePhone || '—' }}</span></span>
+          </span>
+          <span class="reference-action">Track shipment →</span>
+        </button>
+      }
+    </div>
+  </dialog>
   <!-- ================================================= -->
   <!-- SEARCH SECTION -->
   <!-- ================================================= -->
@@ -31,22 +56,22 @@
           <div class="search-dropdown" *ngIf="isSearchDropdownOpen()">
             <button
               type="button"
-              (click)="selectSearchType('awb')"
-              [class.active]="searchType() === 'awb'"
-            >
-              <i class="fa-solid fa-box"></i>
-
-              <span> AWB Number </span>
-            </button>
-
-            <button
-              type="button"
               (click)="selectSearchType('shipperReference')"
               [class.active]="searchType() === 'shipperReference'"
             >
               <i class="fa-solid fa-file-lines"></i>
 
               <span> Shipper Reference </span>
+            </button>
+
+            <button
+              type="button"
+              (click)="selectSearchType('awb')"
+              [class.active]="searchType() === 'awb'"
+            >
+              <i class="fa-solid fa-box"></i>
+
+              <span> AWB Number </span>
             </button>
           </div>
         </div>
@@ -149,242 +174,105 @@
   <!-- ================================================= -->
 
   <section class="results-section" *ngIf="trackInfoo() as result">
-    <div class="container">
-      <!-- ================================================= -->
-      <!-- SHIPMENT HEADER -->
-      <!-- ================================================= -->
-
-      <div class="shipment-card">
-        <div class="shipment-left">
-          <div class="shipment-icon">
-            <i class="fa-solid fa-box"></i>
+    <div class="trk-layout">
+      <section class="trk-summary" aria-label="Shipment summary">
+        <div class="trk-summary-top">
+          <div class="trk-identity">
+            <span class="trk-eyebrow">SHIPMENT OVERVIEW</span>
+            <h2 dir="ltr">{{ result.TrackInfo[0].ShipmentInformation.AWBNo }}</h2>
+            <div class="trk-identifiers">
+              @if (shipmentShipperReference()) {
+                <div><span>Shipper reference</span><strong dir="ltr">{{ shipmentShipperReference() }}</strong></div>
+              }
+              <div><span>Account number</span><strong>{{ result.TrackInfo[0].ShipmentInformation.AccountNo }}</strong></div>
+              @if (result.TrackInfo[0].ShipmentInformation.Weight != null) {
+                <div><span>Weight</span><strong>{{ result.TrackInfo[0].ShipmentInformation.Weight }} kg</strong></div>
+              }
+              @if (result.TrackInfo[0].ShipmentInformation.Pcs != null) {
+                <div><span>Pieces</span><strong>{{ result.TrackInfo[0].ShipmentInformation.Pcs }}</strong></div>
+              }
+            </div>
           </div>
+          @if (trackingList()?.length) {
+            <div class="trk-current" [ngClass]="getStatusClass(trackingList()![0].Status)">
+              <span class="trk-current-label">CURRENT STATUS</span>
+              <div class="trk-current-title"><i [class]="getStatusIcon(trackingList()![0].Status)" aria-hidden="true"></i><strong>{{ getStatusLabel(trackingList()![0].Status) }}</strong></div>
+              <span class="trk-current-date" dir="ltr">{{ trackingList()![0].Transdate }} · {{ trackingList()![0].TransTime }}</span>
+            </div>
+          }
+        </div>
+      </section>
 
+      <section class="trk-contacts" aria-label="Sender and receiver">
+        <div class="trk-contact">
+          <span class="trk-contact-icon"><i class="fa-solid fa-user" aria-hidden="true"></i></span>
+          <div><span class="trk-field-label">Sender</span><h3>BANK MISR</h3>@if (senderAddress()) {<p dir="auto">{{ senderAddress() }}</p>}</div>
+        </div>
+        <div class="trk-contact">
+          <span class="trk-contact-icon"><i class="fa-solid fa-user-check" aria-hidden="true"></i></span>
           <div>
-            <span class="label"> AIR WAYBILL </span>
-
-            <h2>
-              {{ result.TrackInfo[0].ShipmentInformation.AWBNo }}
-            </h2>
-
-            <span class="account">
-              Account:
-              {{ result.TrackInfo[0].ShipmentInformation.AccountNo }}
-            </span>
-          </div>
-        </div>
-
-        <!-- CURRENT STATUS -->
-
-        <div class="current-status" *ngIf="trackingList()?.length">
-          <span class="label"> CURRENT STATUS </span>
-
-          <div class="current-status-badge" [ngClass]="getStatusClass(trackingList()![0].Status)">
-            <i [class]="getStatusIcon(trackingList()![0].Status)"></i>
-
-            {{ getStatusLabel(trackingList()![0].Status) }}
-          </div>
-        </div>
-      </div>
-
-      <!-- ================================================= -->
-      <!-- ROUTE -->
-      <!-- ================================================= -->
-
-      <div class="route-card">
-        <div class="route-location">
-          <span> FROM </span>
-
-          <strong>
-            {{ result.TrackInfo[0].ShipmentInformation.Origin }}
-          </strong>
-        </div>
-
-        <div class="route-middle">
-          <div class="route-line"></div>
-
-          <div class="route-plane">
-            <i class="fa-solid fa-plane"></i>
-          </div>
-
-          <div class="route-line"></div>
-        </div>
-
-        <div class="route-location destination">
-          <span> TO </span>
-
-          <strong>
-            {{ result.TrackInfo[0].ShipmentInformation.Destination }}
-          </strong>
-        </div>
-      </div>
-
-      <!-- ================================================= -->
-      <!-- SHIPMENT INFO -->
-      <!-- ================================================= -->
-
-      <div class="shipment-info-grid">
-        <!-- SENDER -->
-
-        <div class="info-box">
-          <div class="info-icon">
-            <i class="fa-solid fa-user"></i>
-          </div>
-
-          <div>
-            <span> Sender </span>
-
-            <strong>
-              BANK MISR
-            </strong>
-            @if (senderAddress()) {
-              <p class="sender-address">{{ senderAddress() }}</p>
+            <span class="trk-field-label">Receiver</span>
+            <h3 dir="auto">{{ result.TrackInfo[0].ShipmentInformation.Receiver }}</h3>
+            @if (receiverAddressLines().length || receiverPhones().length) {
+              <div class="trk-receiver-details">
+                @if (receiverAddressLines().length) {
+                  <div class="trk-receiver-field">
+                    <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+                    <div>
+                      <span class="trk-field-label">Address</span>
+                      @for (line of receiverAddressLines(); track line) {
+                        <bdi class="trk-address-line">{{ line }}</bdi>
+                      }
+                    </div>
+                  </div>
+                }
+                @if (receiverPhones().length) {
+                  <div class="trk-receiver-field trk-receiver-phone">
+                    <i class="fa-solid fa-phone" aria-hidden="true"></i>
+                    <div>
+                      <span class="trk-field-label">{{ receiverPhones().length > 1 ? 'Mobile numbers' : 'Mobile number' }}</span>
+                      @for (phone of receiverPhones(); track phone.number) {
+                        <a [attr.href]="phone.href" dir="ltr">{{ phone.number }}</a>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
             }
           </div>
         </div>
+      </section>
 
-        <!-- RECEIVER -->
-
-        <div class="info-box">
-          <div class="info-icon">
-            <i class="fa-solid fa-user-check"></i>
-          </div>
-
-          <div class="receiver-details">
-            <span> Receiver </span>
-            <strong dir="auto">{{ result.TrackInfo[0].ShipmentInformation.Receiver }}</strong>
-            @if (receiverAddress()) {
-              <p class="sender-address" dir="auto">{{ receiverAddress() }}</p>
-            }
-          </div>
-        </div>
-
-        <!-- WEIGHT -->
-
-        <div class="info-box">
-          <div class="info-icon">
-            <i class="fa-solid fa-weight-hanging"></i>
-          </div>
-
-          <div>
-            <span> Weight </span>
-
-            <strong>
-              {{ result.TrackInfo[0].ShipmentInformation.Weight }}
-              KG
-            </strong>
-          </div>
-        </div>
-
-        <!-- PIECES -->
-
-        <div class="info-box">
-          <div class="info-icon">
-            <i class="fa-solid fa-boxes-stacked"></i>
-          </div>
-
-          <div>
-            <span> Pieces </span>
-
-            <strong>
-              {{ result.TrackInfo[0].ShipmentInformation.Pcs }}
-            </strong>
-          </div>
-        </div>
-      </div>
-
-      <!-- ================================================= -->
-      <!-- TRACKING -->
-      <!-- ================================================= -->
-
-      <div class="tracking-card">
-        <div class="tracking-header">
-          <div>
-            <span class="section-label"> TRACKING HISTORY </span>
-
-            <h3>Shipment Updates</h3>
-          </div>
-
-          <div class="events-count">
-            {{ trackingList()?.length || 0 }}
-
-            Events
-          </div>
-        </div>
-
-        <!-- TIMELINE -->
-
-        <div class="timeline">
-          <div class="timeline-item" *ngFor="let event of trackingEvents(); let i = index">
-            <!-- CONNECTOR -->
-
-            <div class="timeline-connector" *ngIf="i < (trackingList()?.length || 0) - 1"></div>
-
-            <!-- ICON -->
-
-            <div class="timeline-icon" [ngClass]="getStatusClass(event.Status)">
-              <i [class]="getStatusIcon(event.Status)"></i>
-            </div>
-
-            <!-- EVENT -->
-
-            <div class="timeline-event">
-              <div class="event-main">
-                <div class="event-info">
-                  <div class="event-title">
-                    {{ getStatusLabel(event.Status) }}
-
-                    <span class="status-code">
-                      {{ event.Status }}
-                    </span>
+      <section class="trk-history" aria-labelledby="trk-history-title">
+        <header class="trk-history-heading">
+          <div><span class="trk-eyebrow">SHIPMENT JOURNEY</span><h3 id="trk-history-title">Tracking history</h3><p>Every shipment update, from latest to earliest.</p></div>
+          <span class="trk-event-count">{{ trackingList()?.length || 0 }} updates</span>
+        </header>
+        <ol class="trk-events">
+          @for (event of trackingEvents(); track $index; let i = $index; let last = $last) {
+            <li class="trk-event" [class.trk-event-latest]="i === 0" [class.trk-event-last]="last">
+              <div class="trk-event-date" dir="ltr"><strong>{{ event.Transdate }}</strong><span>{{ event.TransTime }}</span>@if (i === 0) {<b>Latest update</b>}</div>
+              <div class="trk-event-marker"><span [ngClass]="getStatusClass(event.Status)"><i [class]="getStatusIcon(event.Status)" aria-hidden="true"></i></span></div>
+              <div class="trk-event-body">
+                <div class="trk-event-header"><h4>{{ getStatusLabel(event.Status) }}</h4><span class="trk-event-code" [ngClass]="getStatusClass(event.Status)">{{ event.Status }}</span></div>
+                @if (event.Location) {<div class="trk-event-location"><i class="fa-solid fa-location-dot" aria-hidden="true"></i><span>{{ event.Location }}</span></div>}
+                @if (event.displayRemarks) {<div class="trk-event-notes"><span>Shipment details</span><p dir="auto">{{ event.displayRemarks }}</p></div>}
+                @if (event.deliveryName || event.deliveryId) {
+                  <div class="trk-delivery">
+                    <i class="fa-solid fa-user-check" aria-hidden="true"></i>
+                    <div class="trk-delivery-fields">
+                      @if (event.deliveryName) {<div><span>Delivered to</span><strong dir="auto">{{ event.deliveryName }}</strong></div>}
+                      @if (event.deliveryId) {<div><span>Recipient ID</span><strong dir="ltr">{{ event.deliveryId }}</strong></div>}
+                    </div>
                   </div>
-
-                  <div class="event-location" *ngIf="event.Location">
-                    <i class="fa-solid fa-location-dot"></i>
-
-                    {{ event.Location }}
-                  </div>
-                </div>
-
-                <div class="event-time">
-                  <strong>
-                    {{ event.TransTime }}
-                  </strong>
-
-                  <span>
-                    {{ event.Transdate }}
-                  </span>
-                </div>
+                }
               </div>
-
-              <!-- REMARKS -->
-
-              <div class="event-remarks" *ngIf="event.displayRemarks">
-                {{ event.displayRemarks }}
-              </div>
-
-              <!-- DELIVERED TO -->
-
-              <div class="delivery-receipt" *ngIf="event.deliveryName || event.deliveryId">
-                <i class="fa-solid fa-user-check receipt-icon" aria-hidden="true"></i>
-                <div class="receipt-details">
-                  @if (event.deliveryName) {
-                    <span class="receipt-label">Delivered to</span>
-                    <strong class="receipt-name" dir="auto">{{ event.deliveryName }}</strong>
-                  }
-                  @if (event.deliveryId) {
-                    <div class="receipt-id"><span>Recipient ID</span><bdi dir="ltr">{{ event.deliveryId }}</bdi></div>
-                  }
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+            </li>
+          } @empty {
+            <li class="trk-no-events">No tracking updates are available yet.</li>
+          }
+        </ol>
+      </section>
     </div>
   </section>
-
-  <!-- ================================================= -->
-  <!-- EMPTY -->
-  <!-- ================================================= -->
 </div>

@@ -2,27 +2,33 @@
   <div class="portal-brand">
     <div><strong>Shipment portal</strong><span>Tracking &amp; customer support</span></div>
     <span class="brand-divider" aria-hidden="true"></span>
-    <img src="/EGLOGO.png" alt="Egypt Express" />
+    <img class="nav-express-logo" src="/EGLOGO.png" alt="Egypt Express" />
   </div>
-  <app-logout></app-logout>
+  <img class="nav-centered-bank" src="/banque-misr-logo-png_seeklogo-285905.png" alt="Banque Misr" />
+  <div class="portal-account">
+    @if (userName) {
+      <div class="portal-user" [title]="userName">
+        <span class="portal-user-icon"><i class="fa-regular fa-user" aria-hidden="true"></i></span>
+        <bdi class="portal-user-name">{{ userName }}</bdi>
+      </div>
+    }
+    <app-logout></app-logout>
+  </div>
 </header>
-<main class="portal-main">
-  <div class="container mb-5">
-    <app-searching (newSearch)="closeRaiseComplaint()"></app-searching>
-    @if (_abwstate.awbNum()) {
-      <app-complain id="shipment-complaints" style="display: block; scroll-margin-top: 24px"
-        (complaintsLoaded)="onComplaintsLoaded($event)"
-        (addComplaint)="openRaiseComplaint($event)"> </app-complain>
-    }
-    @if (showRaiseComplaint() && selectedAwb()) {
-      <app-raise-complain id="raise-complaint" [awb]="selectedAwb()!"
-        (complaintCompleted)="onComplaintCompleted($event)"> </app-raise-complain>
-    }
-  </div>
-</main>
-@if (showScrollTop()) {
-  <button class="scroll-top-btn" type="button" (click)="scrollToTop()"
-    aria-label="Back to top" title="Back to top">
-    <i class="fa-solid fa-arrow-up" aria-hidden="true"></i>
-  </button>
-}
+<div class="portal-shell">
+  <aside class="portal-sidebar" aria-label="Main navigation">
+    <div class="sidebar-content">
+      <div class="sidebar-heading"><span class="sidebar-mark"><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i></span><div><strong>Customer portal</strong><span>Banque Misr workspace</span></div></div>
+      <span class="sidebar-label">WORKSPACE</span>
+      <nav class="sidebar-links">
+        <a class="sidebar-link" routerLink="/home" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }" ariaCurrentWhenActive="page"><i class="fa-solid fa-house" aria-hidden="true"></i><span>Home</span><i class="fa-solid fa-chevron-right sidebar-arrow" aria-hidden="true"></i></a>
+        <a class="sidebar-link" routerLink="/home/advanced-search" routerLinkActive="is-active" ariaCurrentWhenActive="page"><i class="fa-solid fa-sliders" aria-hidden="true"></i><span>Advanced Search</span><i class="fa-solid fa-chevron-right sidebar-arrow" aria-hidden="true"></i></a>
+        <a class="sidebar-link" routerLink="/home/query-complain" routerLinkActive="is-active" ariaCurrentWhenActive="page"><i class="fa-regular fa-comments" aria-hidden="true"></i><span>Query Complain</span><i class="fa-solid fa-chevron-right sidebar-arrow" aria-hidden="true"></i></a>
+        <a class="sidebar-link" routerLink="/home/updated-request" routerLinkActive="is-active" ariaCurrentWhenActive="page"><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i><span>Update Requests</span><i class="fa-solid fa-chevron-right sidebar-arrow" aria-hidden="true"></i></a>
+      </nav>
+    </div>
+  </aside>
+  <main class="portal-main">
+    <router-outlet></router-outlet>
+  </main>
+</div>

@@ -1,21 +1,3 @@
-/* =========================================
-   SEARCH CONTAINER
-========================================= */
-
-.search-container {
-  width: 100%;
-
-  display: flex;
-  justify-content: center;
-
-  margin: 30px 0;
-}
-
-
-/* =========================================
-   SEARCH BOX
-========================================= */
-
 .search-box {
   width: 100%;
   max-width: 850px;
@@ -45,11 +27,6 @@
     0 0 0 4px var(--focus-shadow),
     0 10px 35px rgba(24, 35, 56, 0.1);
 }
-
-
-/* =========================================
-   SEARCH TYPE
-========================================= */
 
 .search-type {
   position: relative;
@@ -81,69 +58,6 @@
   background: #e8eaf6;
 }
 
-.search-type.open {
-  background: #ffffff;
-
-  box-shadow:
-    0 0 0 3px var(--focus-shadow);
-}
-
-
-/* =========================================
-   SEARCH TYPE ICON
-========================================= */
-
-.search-type-icon {
-  color: var(--primary-color);
-
-  font-size: 15px;
-
-  flex-shrink: 0;
-}
-
-
-/* =========================================
-   SELECTED TYPE
-========================================= */
-
-.selected-type {
-  flex: 1;
-
-  color: var(--text-primary);
-
-  font-size: 14px;
-
-  font-weight: 600;
-
-  white-space: nowrap;
-}
-
-
-/* =========================================
-   ARROW
-========================================= */
-
-.search-type .arrow {
-  color: var(--text-secondary);
-
-  font-size: 11px;
-
-  flex-shrink: 0;
-
-  transition: transform 0.25s ease;
-}
-
-.search-type .arrow.rotate {
-  transform: rotate(180deg);
-
-  color: var(--primary-color);
-}
-
-
-/* =========================================
-   CUSTOM DROPDOWN
-========================================= */
-
 .search-dropdown {
   position: absolute;
 
@@ -170,11 +84,6 @@
   animation: dropdownOpen 0.18s ease;
 }
 
-
-/* =========================================
-   DROPDOWN ANIMATION
-========================================= */
-
 @keyframes dropdownOpen {
   from {
     opacity: 0;
@@ -186,133 +95,6 @@
     transform: translateY(0);
   }
 }
-
-
-/* =========================================
-   DROPDOWN OPTION
-========================================= */
-
-.dropdown-option {
-  position: relative;
-
-  display: flex;
-  align-items: center;
-
-  gap: 12px;
-
-  padding: 11px;
-
-  border-radius: 10px;
-
-  cursor: pointer;
-
-  transition: all 0.2s ease;
-}
-
-.dropdown-option:hover {
-  background: var(--input-background);
-}
-
-.dropdown-option.selected {
-  background: rgba(234, 91, 35, 0.07);
-}
-
-
-/* =========================================
-   OPTION ICON
-========================================= */
-
-.option-icon {
-  width: 38px;
-  height: 38px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 9px;
-
-  background: var(--input-background);
-
-  color: var(--secondary-color);
-
-  font-size: 14px;
-
-  flex-shrink: 0;
-
-  transition: all 0.2s ease;
-}
-
-.dropdown-option:hover .option-icon,
-.dropdown-option.selected .option-icon {
-  background: rgba(234, 91, 35, 0.12);
-
-  color: var(--primary-color);
-}
-
-
-/* =========================================
-   OPTION CONTENT
-========================================= */
-
-.option-content {
-  flex: 1;
-
-  display: flex;
-  flex-direction: column;
-
-  gap: 3px;
-
-  min-width: 0;
-}
-
-.option-title {
-  color: var(--text-primary);
-
-  font-size: 13px;
-
-  font-weight: 600;
-}
-
-.option-description {
-  color: var(--text-secondary);
-
-  font-size: 11px;
-
-  font-weight: 400;
-}
-
-
-/* =========================================
-   SELECTED CHECK
-========================================= */
-
-.selected-icon {
-  color: var(--primary-color);
-
-  font-size: 13px;
-
-  margin-right: 4px;
-}
-
-
-/* =========================================
-   DIVIDER
-========================================= */
-
-.search-divider {
-  width: 1px;
-  height: 32px;
-
-  background: var(--border-color);
-
-  margin: 0 10px;
-}
-
-
-/* =========================================
-   SEARCH INPUT
-========================================= */
 
 .search-input {
   flex: 1;
@@ -355,92 +137,6 @@
   font-weight: 400;
 }
 
-
-/* =========================================
-   CLEAR BUTTON
-========================================= */
-
-.clear-btn {
-  width: 30px;
-  height: 30px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border: none;
-
-  border-radius: 50%;
-
-  background: transparent;
-
-  color: var(--text-placeholder);
-
-  cursor: pointer;
-
-  transition: all 0.2s ease;
-}
-
-.clear-btn:hover {
-  background: var(--input-background);
-
-  color: var(--text-primary);
-}
-
-
-/* =========================================
-   SEARCH BUTTON
-========================================= */
-
-.search-btn {
-  height: 50px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  gap: 9px;
-
-  padding: 0 24px;
-
-  border: none;
-
-  border-radius: 11px;
-
-  background: var(--primary-color);
-
-  color: var(--text-white);
-
-  font-size: 14px;
-
-  font-weight: 600;
-
-  cursor: pointer;
-
-  box-shadow:
-    0 5px 15px rgba(234, 91, 35, 0.2);
-
-  transition: all 0.25s ease;
-}
-
-.search-btn:hover {
-  background: var(--primary-color-dark);
-
-  transform: translateY(-1px);
-
-  box-shadow:
-    0 7px 18px rgba(234, 91, 35, 0.3);
-}
-
-.search-btn:active {
-  transform: translateY(0);
-}
-
-
-/* =========================================
-   RESPONSIVE
-========================================= */
-
 @media (max-width: 768px) {
   .search-box {
     flex-direction: column;
@@ -454,15 +150,7 @@
     min-width: unset;
   }
 
-  .search-divider {
-    display: none;
-  }
-
   .search-input {
-    width: 100%;
-  }
-
-  .search-btn {
     width: 100%;
   }
 
@@ -470,38 +158,9 @@
     width: 100%;
   }
 }
-
-
-/* ================= SEARCH ================= */
 .search-section {
   padding: 55px 0 90px;
 }
-.search-header {
-  text-align: center;
-  color: #fff;
-}
-.search-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 7px 14px;
-  border-radius: 30px;
-  background: rgba(255,255,255,.1);
-  font-size: 11px;
-  font-weight: 600;
-}
-.search-header h1 {
-  margin: 18px 0 8px;
-  font-size: 36px;
-  font-weight: 800;
-}
-.search-header p {
-  margin: 0;
-  color: #b7c0d0;
-  font-size: 14px;
-}
-
-/* SEARCH BOX */
 
 .search-box {
   position: relative;
@@ -513,8 +172,6 @@
   border-radius: 14px;
   background: #fff;
 }
-
-/* SEARCH TYPE */
 
 .search-type {
   position: relative;
@@ -542,8 +199,6 @@
   font-size: 9px;
   color: #929aaa;
 }
-
-/* DROPDOWN */
 .search-dropdown {
   position: absolute;
   z-index: 20;
@@ -575,8 +230,6 @@
   background: #fff1eb;
   color: #ff5000;
 }
-
-/* INPUT */
 
 .search-input {
   position: relative;
@@ -612,9 +265,6 @@
   color: #182338;
 }
 
-
-/* BUTTON */
-
 .track-btn {
   height: 52px;
 
@@ -645,9 +295,6 @@
   background: #e74600;
 }
 
-
-/* ================= RESULTS ================= */
-
 .results-section {
   position: relative;
 
@@ -655,510 +302,6 @@
 
   padding-bottom: 60px;
 }
-
-
-/* ================= SHIPMENT ================= */
-
-.shipment-card {
-  padding: 23px;
-
-  border-radius: 16px;
-
-  background: #fff;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
-  box-shadow:
-    0 8px 30px rgba(17,24,39,.06);
-}
-
-.shipment-left {
-  display: flex;
-
-  align-items: center;
-
-  gap: 15px;
-}
-
-.shipment-icon {
-  width: 58px;
-
-  height: 58px;
-
-  border-radius: 14px;
-
-  background: #fff1eb;
-
-  color: #ff5000;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  font-size: 22px;
-}
-
-.label {
-  display: block;
-
-  font-size: 9px;
-
-  font-weight: 700;
-
-  color: #9aa2b1;
-
-  letter-spacing: 1px;
-}
-
-.shipment-left h2 {
-  margin: 4px 0;
-
-  font-size: 24px;
-
-  font-weight: 800;
-
-  color: #182338;
-}
-
-.account {
-  font-size: 11px;
-
-  color: #8c95a5;
-}
-
-
-/* CURRENT STATUS */
-
-.current-status {
-  text-align: right;
-}
-
-.current-status-badge {
-  margin-top: 6px;
-
-  display: inline-flex;
-
-  align-items: center;
-
-  gap: 7px;
-
-  padding: 8px 12px;
-
-  border-radius: 8px;
-
-  font-size: 12px;
-
-  font-weight: 700;
-}
-
-
-/* ================= ROUTE ================= */
-
-.route-card {
-  margin-top: 14px;
-
-  padding: 23px;
-
-  border-radius: 16px;
-
-  background: #fff;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
-  box-shadow:
-    0 5px 25px rgba(17,24,39,.04);
-}
-
-.route-location {
-  width: 35%;
-}
-
-.route-location span {
-  display: block;
-
-  font-size: 9px;
-
-  color: #9aa2b1;
-
-  font-weight: 700;
-
-  letter-spacing: 1px;
-}
-
-.route-location strong {
-  display: block;
-
-  margin-top: 6px;
-
-  font-size: 14px;
-
-  color: #182338;
-}
-
-.destination {
-  text-align: right;
-}
-
-.route-middle {
-  flex: 1;
-
-  display: flex;
-
-  align-items: center;
-
-  gap: 10px;
-
-  margin: 0 25px;
-}
-
-.route-line {
-  flex: 1;
-
-  height: 1px;
-
-  background: #e5e9ef;
-}
-
-.route-plane {
-  width: 34px;
-
-  height: 34px;
-
-  border-radius: 50%;
-
-  background: #fff1eb;
-
-  color: #ff5000;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-}
-
-
-/* ================= INFO ================= */
-
-.shipment-info-grid {
-  margin-top: 14px;
-
-  display: grid;
-
-  grid-template-columns:
-    repeat(4,1fr);
-
-  gap: 14px;
-}
-
-.info-box {
-  padding: 17px;
-
-  background: #fff;
-
-  border-radius: 13px;
-
-  display: flex;
-
-  align-items: center;
-
-  gap: 11px;
-}
-
-.info-icon {
-  width: 40px;
-
-  height: 40px;
-
-  min-width: 40px;
-
-  border-radius: 9px;
-
-  background: #f5f7fb;
-
-  color: #64748b;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-}
-
-.info-box span {
-  display: block;
-
-  font-size: 10px;
-
-  color: #9aa2b1;
-}
-
-.sender-address {
-  margin: 6px 0 0;
-  color: #7b8798;
-  font-size: 11px;
-  font-weight: 400;
-  line-height: 1.7;
-  overflow-wrap: anywhere;
-}
-
-.receiver-details {
-  min-width: 0;
-  flex: 1;
-}
-
-
-.info-box strong {
-  display: block;
-
-  margin-top: 3px;
-
-  color: #182338;
-
-  font-size: 12px;
-}
-
-
-/* ================= TRACKING ================= */
-
-.tracking-card {
-  margin-top: 14px;
-
-  padding: 27px;
-
-  border-radius: 16px;
-
-  background: #fff;
-
-  box-shadow:
-    0 5px 25px rgba(17,24,39,.04);
-}
-
-.tracking-header {
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
-  margin-bottom: 32px;
-}
-
-.section-label {
-  font-size: 9px;
-
-  color: #ff5000;
-
-  font-weight: 700;
-
-  letter-spacing: 1px;
-}
-
-.tracking-header h3 {
-  margin: 5px 0 0;
-
-  font-size: 20px;
-
-  font-weight: 800;
-
-  color: #182338;
-}
-
-.events-count {
-  padding: 7px 11px;
-
-  border-radius: 7px;
-
-  background: #f5f7fb;
-
-  color: #707a8c;
-
-  font-size: 10px;
-
-  font-weight: 700;
-}
-
-
-/* ================= TIMELINE ================= */
-
-.timeline-item {
-  position: relative;
-
-  display: flex;
-
-  gap: 16px;
-
-  padding-bottom: 27px;
-}
-
-.timeline-item:last-child {
-  padding-bottom: 0;
-}
-
-.timeline-icon {
-  position: relative;
-
-  z-index: 2;
-
-  width: 44px;
-
-  height: 44px;
-
-  min-width: 44px;
-
-  border-radius: 50%;
-
-  border: 4px solid #fff;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  box-shadow:
-    0 4px 12px rgba(0,0,0,.08);
-}
-
-.timeline-connector {
-  position: absolute;
-
-  z-index: 1;
-
-  left: 21px;
-
-  top: 44px;
-
-  bottom: 0;
-
-  width: 2px;
-
-  background: #edf0f4;
-}
-
-.timeline-event {
-  flex: 1;
-
-  padding: 14px 16px;
-
-  border: 1px solid #edf0f4;
-
-  border-radius: 11px;
-
-  transition: .2s;
-}
-
-.timeline-event:hover {
-  border-color: #dfe4eb;
-
-  box-shadow:
-    0 5px 20px rgba(0,0,0,.04);
-}
-
-.event-main {
-  display: flex;
-
-  justify-content: space-between;
-
-  gap: 15px;
-}
-
-.event-title {
-  color: #182338;
-
-  font-size: 13px;
-
-  font-weight: 700;
-}
-
-.status-code {
-  margin-left: 6px;
-
-  padding: 3px 6px;
-
-  border-radius: 4px;
-
-  background: #f3f4f6;
-
-  color: #7d8796;
-
-  font-size: 8px;
-}
-
-.event-location {
-  margin-top: 5px;
-
-  color: #7c8594;
-
-  font-size: 11px;
-}
-
-.event-location i {
-  margin-right: 4px;
-
-  font-size: 9px;
-}
-
-.event-time {
-  display: flex;
-
-  flex-direction: column;
-
-  align-items: flex-end;
-
-  white-space: nowrap;
-}
-
-.event-time strong {
-  font-size: 11px;
-
-  color: #182338;
-}
-
-.event-time span {
-  margin-top: 3px;
-
-  font-size: 9px;
-
-  color: #9aa2b1;
-}
-
-.event-remarks {
-  margin-top: 10px;
-
-  padding-top: 9px;
-
-  border-top: 1px solid #f0f2f5;
-
-  color: #697386;
-
-  font-size: 11px;
-
-  line-height: 1.6;
-}
-
-.delivered-to {
-  margin-top: 8px;
-
-  color: #596273;
-
-  font-size: 10px;
-
-  font-weight: 600;
-}
-
-
-/* ================= STATUS COLORS ================= */
 
 .status-info {
   background: #eef5ff;
@@ -1214,76 +357,10 @@
   color: #6b7280;
 }
 
-
-/* ================= EMPTY ================= */
-
-.empty-state {
-  padding: 50px 0;
-}
-
-.empty-card {
-  max-width: 450px;
-
-  margin: auto;
-
-  padding: 45px 25px;
-
-  text-align: center;
-
-  background: #fff;
-
-  border-radius: 16px;
-}
-
-.empty-icon {
-  width: 65px;
-
-  height: 65px;
-
-  margin: auto;
-
-  border-radius: 50%;
-
-  background: #fff1eb;
-
-  color: #ff5000;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  font-size: 25px;
-}
-
-.empty-card h3 {
-  margin: 17px 0 7px;
-
-  font-size: 18px;
-
-  color: #182338;
-}
-
-.empty-card p {
-  margin: 0;
-
-  font-size: 12px;
-
-  color: #8a93a3;
-}
-
-
-/* ================= RESPONSIVE ================= */
-
 @media (max-width: 768px) {
 
   .search-section {
     padding: 40px 0 75px;
-  }
-
-  .search-header h1 {
-    font-size: 28px;
   }
 
   .search-box {
@@ -1297,137 +374,25 @@
     justify-content: center;
   }
 
-  .shipment-card {
-    flex-direction: column;
-
-    align-items: flex-start;
-
-    gap: 20px;
-  }
-
-  .current-status {
-    text-align: left;
-  }
-
-  .route-card {
-    flex-direction: column;
-
-    align-items: flex-start;
-
-    gap: 15px;
-  }
-
-  .route-location {
-    width: 100%;
-  }
-
-  .destination {
-    text-align: left;
-  }
-
-  .route-middle {
-    width: 100%;
-
-    margin: 0;
-  }
-
-  .shipment-info-grid {
-    grid-template-columns: repeat(2,1fr);
-  }
-
-  .event-main {
-    flex-direction: column;
-  }
-
-  .event-time {
-    align-items: flex-start;
-  }
-
-}
-
-
-@media (max-width: 480px) {
-
-  .shipment-info-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .tracking-card {
-    padding: 18px;
-  }
-
-  .timeline-item {
-    gap: 10px;
-  }
-
-  .timeline-icon {
-    width: 38px;
-
-    min-width: 38px;
-
-    height: 38px;
-  }
-
-  .timeline-connector {
-    left: 18px;
-  }
-
 }
 .status-delivered {
   background: #ecfdf3;
   color: #16a34a;
 }
-.not-found-section {
-  padding: 45px 0;
-  background: #f5f7fb;
-}
-
-.not-found-card {
-  max-width: 500px;
-  margin: auto;
-  padding: 40px 25px;
-  text-align: center;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 8px 30px rgba(17, 24, 39, .06);
-}
-
-.not-found-icon {
-  width: 65px;
-  height: 65px;
-  margin: auto;
-  border-radius: 50%;
-  background: #fff1eb;
-  color: #ff5000;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  font-size: 25px;
-}
-
-.not-found-card h3 {
-  margin: 17px 0 7px;
-  color: #182338;
-  font-size: 20px;
-  font-weight: 800;
-}
-
-.not-found-card p {
-  margin: 0;
-  color: #697386;
-  font-size: 13px;
-}
-
-.not-found-card p strong {
-  color: #182338;
-}
-
-.not-found-card span {
-  display: block;
-  margin-top: 7px;
-  color: #9aa2b1;
-  font-size: 11px;
-}
-.delivery-receipt{display:flex;align-items:flex-start;gap:12px;margin-top:14px;padding:14px 16px;border:1px solid #dcece3;border-radius:10px;background:#f5faf7}.receipt-icon{display:grid;place-items:center;flex-shrink:0;width:32px;height:32px;background:#e6f3eb;border-radius:8px;color:#25824c;font-size:14px}.receipt-details{min-width:0;flex:1}.receipt-label{display:block;font-size:10px;font-weight:600;color:#62756a;margin-bottom:4px}.receipt-name{display:block;font-size:13px;font-weight:650;line-height:1.6;color:#182338;overflow-wrap:anywhere}.receipt-id{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 10px;margin-top:6px;font-size:12px}.receipt-id>span{font-size:11px;color:#6b7280}.receipt-id bdi{font-weight:500;color:#475569;letter-spacing:.3px;overflow-wrap:anywhere}@media(max-width:480px){.delivery-receipt{padding:12px;gap:10px}.receipt-name{font-size:12px}}
+.reference-dialog { width: min(760px, calc(100% - 24px)); max-height: 85dvh; padding: 24px; border: 0; border-radius: 18px; color: #182338; box-shadow: 0 24px 80px #0003; overflow: hidden; }
+.reference-dialog[open] { display: flex; flex-direction: column; }
+.reference-dialog::backdrop { background: #18233899; }
+.reference-heading { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; margin-bottom: 18px; flex-shrink: 0; }
+.reference-heading h2 { font-size: 22px; margin: 0 0 6px; }
+.reference-heading p { margin: 0; color: #697386; overflow-wrap: anywhere; }
+.reference-close { border: 0; background: #f1f3f6; border-radius: 50%; width: 34px; height: 34px; flex-shrink: 0; font-size: 24px; }
+.reference-results { display: grid; gap: 12px; overflow-y: auto; min-height: 0; padding: 4px; }
+.reference-match { width: 100%; padding: 18px; text-align: left; background: #fff; border: 1px solid #dce1e8; border-radius: 12px; color: inherit; }
+.reference-match:hover { background: #fff7f2; border-color: #ff5000; }
+.reference-match:focus-visible, .reference-close:focus-visible { outline: 3px solid #ff5000; outline-offset: 3px; }
+.reference-numbers, .reference-consignee { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.reference-consignee { margin-top: 14px; }
+.reference-match small { display: block; font-size: 11px; color: #697386; margin-bottom: 4px; }
+.reference-match strong, .reference-consignee span span { display: block; overflow-wrap: anywhere; }
+.reference-action { display: block; color: #b33c00; font-size: 12px; font-weight: 600; margin-top: 16px; }
+@media (max-width: 480px) { .reference-dialog { padding: 16px; } .reference-match { padding: 12px; } .reference-numbers { font-size: 12px; } }

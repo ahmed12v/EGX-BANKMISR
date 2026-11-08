@@ -1,0 +1,76 @@
+<section class="query-page">
+  <header class="page-heading">
+    <div>
+      <h1>{{ updateRequests() ? 'Update Requests' : 'Query Complaints' }}</h1>
+      <p>Search, review and export the {{ itemsLabel() }} you have submitted.</p>
+    </div>
+    <div class="heading-icon" aria-hidden="true"><i class="fa-regular fa-message"></i></div>
+  </header>
+
+  <section class="filter-card" [attr.aria-label]="itemLabel() + ' filters'">
+    <div class="filter-heading">
+      <div class="filter-title">
+        <div class="filter-icon"><i class="fa-solid fa-sliders" aria-hidden="true"></i></div>
+        <div><h2>Search filters</h2><p>Search by number across all dates, or filter by date range.</p></div>
+      </div>
+      <button class="export-btn" type="button" [disabled]="loading() || exporting() || !filteredComplaints().length" (click)="exportExcel()"><i class="fa-solid fa-file-excel"></i><span>{{ exporting() ? 'Exporting…' : 'Export Excel' }}</span></button>
+    </div>
+    @if (exportError()) {
+      <p class="text-danger" role="alert">{{ exportError() }}</p>
+    }
+    <div class="filter-grid">
+      <label class="field"><span>From date</span><div class="input-wrap"><i class="fa-regular fa-calendar"></i><input type="date" [ngModel]="fromDate()" (ngModelChange)="updateDate('from', $event)" /></div></label>
+      <label class="field"><span>To date</span><div class="input-wrap"><i class="fa-regular fa-calendar"></i><input type="date" [ngModel]="toDate()" (ngModelChange)="updateDate('to', $event)" /></div></label>
+      <label class="field complaint-field"><span>{{ itemLabel() }} number</span><div class="input-wrap"><i class="fa-solid fa-magnifying-glass"></i><input type="search" [ngModel]="complaintNumber()" (ngModelChange)="updateComplaintNumber($event)" (keydown.enter)="searchByNumber()" inputmode="numeric" placeholder="e.g. 10123" /></div></label>
+      <div class="filter-actions flex-wrap">
+        <button class="btn btn-primary text-nowrap" type="button" (click)="searchByNumber()"
+          style="--bs-btn-bg: var(--primary-color); --bs-btn-border-color: var(--primary-color);
+                 --bs-btn-hover-bg: var(--primary-color-dark); --bs-btn-hover-border-color: var(--primary-color-dark);
+                 --bs-btn-active-bg: var(--primary-color-dark); --bs-btn-active-border-color: var(--primary-color-dark);">
+          <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i> Search
+        </button>
+        <button class="btn-clear text-nowrap" type="button" (click)="clearFilters()">Reset to today</button>
+      </div>
+    </div>
+    @if (appliedComplaintNumber(); as number) {
+      <p class="small text-secondary mt-3 mb-0" role="status">Showing matches for {{ number }} across all dates.</p>
+    }
+  </section>
+
+  <section class="results-card">
+    @if (loading()) {
+      <div class="empty-state" role="status"><p>Loading {{ itemsLabel() }}…</p></div>
+    } @else if (errorMessage()) {
+      <div class="empty-state"><div><i class="fa-solid fa-circle-exclamation"></i></div><h3>Unable to show {{ itemsLabel() }}</h3><p>{{ errorMessage() }}</p></div>
+    } @else if (filteredComplaints().length) {
+      <div class="table-wrap"><table><thead><tr><th>{{ itemLabel() }} No.</th><th>{{ dateLabel() }}</th><th>AWB number</th><th>{{ subjectLabel() }}</th><th>Status</th><th>{{ categoryLabel() }}</th></tr></thead>
+      <tbody>@for (complaint of paginatedComplaints(); track complaint.number) {<tr class="complaint-row" tabindex="0" role="button" [attr.aria-label]="'View ' + itemLabel().toLowerCase() + ' ' + complaint.number" (click)="openComplaint(complaint)" (keydown.enter)="openComplaint(complaint)" (keydown.space)="$event.preventDefault(); openComplaint(complaint)"><td><strong>{{ complaint.number }}</strong></td><td>{{ complaint.date }}</td><td>{{ complaint.awb || '—' }}</td><td class="subject" [title]="complaint.subject">{{ complaint.subject || '—' }}</td><td><span class="status" [class]="statusClass(complaint.status)"><i></i>{{ complaint.status }}</span></td><td class="root-cause" [title]="complaint.rootCause">{{ complaint.rootCause || '—' }}</td></tr>}</tbody></table></div>
+      <footer class="table-footer"><span>Showing {{ firstVisibleRow() }}–{{ lastVisibleRow() }} of {{ filteredComplaints().length }}</span><nav [attr.aria-label]="itemLabel() + ' pages'"><button type="button" [disabled]="currentPage() === 1" (click)="goToPage(currentPage() - 1)" aria-label="Previous page"><i class="fa-solid fa-chevron-left"></i></button>@for (page of pageNumbers(); track page) {<button type="button" [class.active]="currentPage() === page" (click)="goToPage(page)" [attr.aria-label]="'Page ' + page" [attr.aria-current]="currentPage() === page ? 'page' : null">{{ page }}</button>}<button type="button" [disabled]="currentPage() === totalPages()" (click)="goToPage(currentPage() + 1)" aria-label="Next page"><i class="fa-solid fa-chevron-right"></i></button></nav></footer>
+    } @else {
+      <div class="empty-state"><div><i class="fa-regular fa-folder-open"></i></div><h3>No {{ itemsLabel() }} found</h3><p>Try changing the date range or checking the {{ itemLabel().toLowerCase() }} number.</p><button type="button" (click)="clearFilters()">Reset to today</button></div>
+    }
+  </section>
+</section>
+
+@if (selectedComplaint(); as complaint) {
+  <div class="modal-backdrop" role="presentation" (click)="closeComplaint()" (keydown.escape)="closeComplaint()">
+    <section class="complaint-modal" role="dialog" aria-modal="true" aria-labelledby="complaint-dialog-title" (click)="$event.stopPropagation()">
+      <header class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-icon"><i class="fa-regular fa-message"></i></div>
+          <div><span>{{ itemLabel().toUpperCase() }} DETAILS</span><h2 id="complaint-dialog-title">{{ complaint.number }}</h2></div>
+        </div>
+        <button class="modal-close" type="button" [attr.aria-label]="'Close ' + itemLabel().toLowerCase() + ' details'" (click)="closeComplaint()"><i class="fa-solid fa-xmark"></i></button>
+      </header>
+      <div class="modal-body">
+        <div class="detail-item"><span>{{ itemLabel() }} number</span><strong>{{ complaint.number }}</strong></div>
+        <div class="detail-item"><span>{{ updateRequests() ? dateLabel() : 'Submission date' }}</span><strong>{{ complaint.date }}</strong></div>
+        <div class="detail-item"><span>AWB number</span><strong>{{ complaint.awb }}</strong></div>
+        <div class="detail-item"><span>Status</span><span class="status" [class]="statusClass(complaint.status)"><i></i>{{ complaint.status }}</span></div>
+        <div class="detail-item detail-wide"><span>{{ subjectLabel() }}</span><strong>{{ complaint.subject }}</strong></div>
+        <div class="detail-item detail-wide"><span>{{ categoryLabel() }}</span><strong>{{ complaint.rootCause }}</strong></div>
+      </div>
+      <footer class="modal-footer"><button type="button" (click)="closeComplaint()">Close</button></footer>
+    </section>
+  </div>
+}

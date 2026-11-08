@@ -630,3 +630,53 @@ button:disabled {
     width: 100%;
   }
 }
+
+/* Paired logos within the existing Egypt Express theme. */
+.partner-logos { display: flex; align-items: center; gap: 20px; }
+.partner-divider { width: 1px; height: 36px; background: var(--border-color); flex-shrink: 0; }
+.partner-logos .express-logo { width: 132px; height: 48px; object-fit: contain; filter: brightness(0); }
+.partner-logos .misr-logo { width: 140px; height: 60px; max-height: none; object-fit: cover; }
+.login-partners { margin-bottom: 28px; }
+.portal-brand-caption { border-left: 1px solid var(--border-color); padding-left: 18px; }
+@media (max-width: 767px) {
+  .partner-logos { gap: 14px; }
+  .partner-logos .express-logo { width: 100px; height: 40px; }
+  .partner-logos .misr-logo { width: 112px; height: 48px; }
+  .portal-header { gap: 12px; flex-wrap: wrap; }
+  .portal-brand { flex-wrap: wrap; gap: 12px; }
+  .portal-brand-caption { display: none; }
+}
+
+:root app-login .hero-partners {
+  width: fit-content;
+  max-width: 100%;
+  gap: 24px;
+  margin-bottom: 40px;
+}
+:root app-login .hero-partners .express-logo {
+  width: 190px;
+  height: 76px;
+  filter: none;
+  flex-shrink: 0;
+}
+:root app-login .hero-partners .partner-divider {
+  height: 42px;
+  background: #ffffff50;
+}
+:root app-login .hero-partners .misr-logo {
+  width: 140px;
+  height: 60px;
+  background: #fff;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+@media (max-width: 991px) {
+  :root app-login .hero-partners { gap: 16px; }
+  :root app-login .hero-partners .express-logo { width: 140px; height: 64px; }
+  :root app-login .hero-partners .misr-logo { width: 112px; height: 48px; }
+}
+@media (max-width: 400px) {
+  :root app-login .hero-partners { gap: 12px; }
+  :root app-login .hero-partners .express-logo { width: 120px; height: 58px; }
+  :root app-login .hero-partners .misr-logo { width: 100px; height: 44px; }
+}

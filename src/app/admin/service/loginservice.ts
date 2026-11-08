@@ -13,7 +13,7 @@ export class LoginService {
 
  login(body:LoginRequest ):Observable<LoginResponse> {
     return this.apiHttp.post<LoginResponse>
-     (`https://egxpress.me/IconnectSecure/IntegraOntrackService.svc/GetIConnectLogin`,body);
+     (`/BANKMISR/login`,body);
 
   }
 

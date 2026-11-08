@@ -1,0 +1,37 @@
+<main class="dashboard">
+  <header class="topbar"><a class="brand" href="/dashboard"><img src="EGLOGO.png" alt="Egypt Express"></a><span>CRM WORKSPACE</span><app-logout /></header>
+  <section class="heading"><div><p class="eyebrow">DELIVERY OPERATIONS</p><h1>Location updates</h1><p>Delivery location requests from Banque Misr accounts.</p></div><button type="button" (click)="refreshToday()" [disabled]="loading() || savingRequests().size > 0"><i class="fa-solid fa-rotate" aria-hidden="true"></i> {{ loading() ? 'Refreshing…' : 'Refresh requests' }}</button></section>
+  <section class="date-controls" aria-label="Request date filter"><label for="requests-from">From date</label><input id="requests-from" type="date" [value]="fromDate()" (input)="fromDate.set($any($event.target).value)" [disabled]="loading() || savingRequests().size > 0"><label for="requests-to">To date</label><input id="requests-to" type="date" [value]="toDate()" [min]="fromDate()" (input)="toDate.set($any($event.target).value)" [disabled]="loading() || savingRequests().size > 0"><button type="button" (click)="applyDates()" [disabled]="loading() || savingRequests().size > 0">Apply</button><button type="button" (click)="fromDate.set(''); toDate.set(''); applyDates()" [disabled]="loading() || (!fromDate() && !toDate() && !appliedFromDate() && !appliedToDate())">All dates</button></section>
+  @if (error()) { <div class="notice" role="alert">{{ error() }} @if (loaded()) { <span>Showing the last successful results.</span> }</div> }
+  @if (statsError()) { <div class="notice" role="alert">{{ statsError() }}</div> }
+  <section class="metrics" aria-label="Request statistics">
+    <article><span class="metric-icon"><i class="fa-solid fa-location-dot" aria-hidden="true"></i></span><div><p>Total location requests</p><strong>{{ totalCount() ?? '—' }}</strong><small>All BANK REQUEST requests · All dates</small></div></article>
+    <article><span class="metric-icon today"><i class="fa-regular fa-calendar" aria-hidden="true"></i></span><div><p>Requests today</p><strong>{{ todayCount() ?? '—' }}</strong><small>{{ today() }} · Egypt time</small></div></article>
+  </section>
+  @if (completionError()) { <div class="notice" role="alert">{{ completionError() }}</div> }
+  <p class="completion-note">Completed requests are saved on the server and appear as Update Done in shipment tracking.</p>
+  <section class="requests" [attr.aria-busy]="loading()">
+    <div class="table-heading"><div><h2>Location requests</h2><p>Classification: <b>BANK REQUEST</b> · {{ filtered().length }} results</p></div><div class="filters"><label class="search"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><input aria-label="Search location requests" placeholder="Search AWB, shipper reference or request…" [value]="search()" (input)="setSearch($any($event.target).value)"></label><label class="today-filter"><input type="checkbox" [checked]="todayOnly()" (change)="setToday($any($event.target).checked)"> Today only</label></div></div>
+    <div class="table-scroll"><table><thead><tr><th>Request no.</th><th>Date</th><th>AWB number</th><th>Location / instructions</th><th>Shipper reference</th><th>Classification</th><th>Completed</th></tr></thead><tbody>
+      @for (row of visible(); track requestKey(row)) {
+        <tr class="request-row" [class.completed-row]="isCompleted(row)" tabindex="0" (click)="openDetails(row)" (keydown.enter)="openDetails(row)" (keydown.space)="$event.preventDefault(); openDetails(row)" [attr.aria-label]="'View update request ' + row.CoReg">
+          <td class="reference">{{ row.CoReg }}</td><td class="nowrap">{{ row.ComplaintDate }}</td><td class="reference">{{ row.AirwayBillNo }}</td>
+          <td dir="auto"><span class="request-preview">{{ row.Complaint || '—' }}</span></td><td dir="auto">{{ row.ShipperReference || '—' }}</td><td><span class="category">{{ row.RootCause }}</span></td>
+          <td (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()"><label class="completed-control"><input type="checkbox" [checked]="isCompleted(row)" [disabled]="isCompleted(row) || isSaving(row) || loading()" (change)="toggleCompleted(row, $any($event.target).checked); $any($event.target).checked = isCompleted(row)" [attr.aria-label]="'Mark request ' + row.CoReg + ' completed'"><span>{{ isSaving(row) ? 'Saving…' : isCompleted(row) ? 'Done' : 'Mark done' }}</span></label></td>
+        </tr>
+      }
+      @empty { <tr><td colspan="7" class="empty">{{ loading() ? 'Loading location requests…' : error() ? 'Requests could not be loaded.' : appliedFromDate() || appliedToDate() ? 'No requests found for the selected dates.' : 'No requests found.' }}</td></tr> }
+    </tbody></table></div>
+    <footer class="pagination-bar"><span>Page {{ page() }} of {{ pageCount() }} · {{ filtered().length }} requests</span><div><button type="button" [disabled]="page() <= 1" (click)="page.set(page() - 1)">Previous</button><button type="button" [disabled]="page() >= pageCount()" (click)="page.set(page() + 1)">Next</button></div></footer>
+  </section>
+</main>
+
+<dialog #detailsDialog class="request-dialog" aria-labelledby="request-details-title" (click)="$event.target === $event.currentTarget && closeDetails()">
+  @if (selected(); as row) {
+    <header><div><p class="eyebrow">UPDATE REQUEST</p><h2 id="request-details-title">Request {{ row.CoReg }}</h2></div><button type="button" (click)="closeDetails()" aria-label="Close details">✕</button></header>
+    <dl class="request-details"><div><dt>AWB number</dt><dd>{{ row.AirwayBillNo }}</dd></div><div><dt>Date</dt><dd>{{ row.ComplaintDate }}</dd></div><div><dt>Shipper reference</dt><dd dir="auto">{{ row.ShipperReference || '—' }}</dd></div><div><dt>Classification</dt><dd>{{ row.RootCause }}</dd></div></dl>
+    <h3>Location / instructions</h3><p class="full-instructions" dir="auto">{{ row.Complaint || '—' }}</p>
+    <footer><label class="completed-control"><input type="checkbox" [checked]="isCompleted(row)" [disabled]="isCompleted(row) || isSaving(row) || loading()" (change)="toggleCompleted(row, $any($event.target).checked); $any($event.target).checked = isCompleted(row)">Completed</label><button type="button" (click)="closeDetails()">Close</button></footer>
+    @if (completionError()) { <p class="notice" role="alert">{{ completionError() }}</p> }
+  }
+</dialog>

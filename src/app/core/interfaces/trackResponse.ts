@@ -24,6 +24,8 @@ export interface ShipmentInformation {
   AgentAWB: string
   AuditNote: any
   ConsigneeDetails: string
+  ConsigneePhone?: string
+  ConsigneeMobile?: string
   CustomerCash: string
   Destination: string
   GoodsDesc: string

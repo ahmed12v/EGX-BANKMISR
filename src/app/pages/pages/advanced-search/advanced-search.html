@@ -1,0 +1,128 @@
+<section class="query-page">
+  <header class="page-heading">
+    <div>
+      <h1>Advanced Search</h1>
+      <p>Find shipments by date, shipper reference, AWB number, and delivery status.</p>
+    </div>
+    <div class="heading-icon" aria-hidden="true"><i class="fa-solid fa-magnifying-glass"></i></div>
+  </header>
+
+  <form #filters class="filter-card" aria-labelledby="shipment-filters" (submit)="search($event, filters)" (reset)="resetResults()">
+    <div class="filter-heading">
+      <div class="filter-title">
+        <div class="filter-icon"><i class="fa-solid fa-sliders" aria-hidden="true"></i></div>
+        <div>
+          <h2 id="shipment-filters">Shipment filters</h2>
+          <p>Set your filters, then run a search.</p>
+        </div>
+      </div>
+      <button class="export-btn" type="button" [disabled]="!rows().length || loading() || exporting()" (click)="exportExcel()">
+        <i class="fa-solid fa-file-excel" aria-hidden="true"></i> {{ exporting() ? 'Exporting…' : 'Export Excel' }}
+      </button>
+    </div>
+
+    @if (exportError()) {
+      <p class="text-danger" role="alert">{{ exportError() }}</p>
+    }
+    <div class="filter-grid">
+      <label class="field">
+        <span>Date from</span>
+        <div class="input-wrap"><i class="fa-regular fa-calendar" aria-hidden="true"></i><input type="date" name="dateFrom" [attr.value]="today" required></div>
+      </label>
+      <label class="field">
+        <span>Date to</span>
+        <div class="input-wrap"><i class="fa-regular fa-calendar" aria-hidden="true"></i><input type="date" name="dateTo" [attr.value]="today" required></div>
+      </label>
+      <label class="field">
+        <span>Shipper reference from</span>
+        <div class="input-wrap"><i class="fa-solid fa-hashtag" aria-hidden="true"></i><input name="shipperRefFrom" type="text" autocomplete="off"></div>
+      </label>
+      <label class="field">
+        <span>Shipper reference to</span>
+        <div class="input-wrap"><i class="fa-solid fa-hashtag" aria-hidden="true"></i><input name="shipperRefTo" type="text" autocomplete="off"></div>
+      </label>
+      <label class="field">
+        <span>AWB from</span>
+        <div class="input-wrap"><i class="fa-solid fa-barcode" aria-hidden="true"></i><input name="awbFrom" type="text" autocomplete="off"></div>
+      </label>
+      <label class="field">
+        <span>AWB to</span>
+        <div class="input-wrap"><i class="fa-solid fa-barcode" aria-hidden="true"></i><input name="awbTo" type="text" autocomplete="off"></div>
+      </label>
+      <label class="field">
+        <span>Shipment status</span>
+        <select class="form-select py-2" name="shipmentStatus">
+          <option value="all">All</option>
+          <option value="delivered">Delivered Done</option>
+          <option value="pending">Pending</option>
+        </select>
+      </label>
+      <div class="filter-actions">
+        <button class="btn-clear" type="reset" [disabled]="loading()">Reset</button>
+        <button class="btn btn-primary" type="submit" [disabled]="loading()"
+          style="--bs-btn-bg: var(--primary-color); --bs-btn-border-color: var(--primary-color);
+                 --bs-btn-hover-bg: var(--primary-color-dark); --bs-btn-hover-border-color: var(--primary-color-dark);
+                 --bs-btn-active-bg: var(--primary-color-dark); --bs-btn-active-border-color: var(--primary-color-dark);
+                 --bs-btn-disabled-bg: var(--primary-color); --bs-btn-disabled-border-color: var(--primary-color);
+                 --bs-btn-focus-shadow-rgb: 234, 91, 35;">
+          <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i> {{ loading() ? 'Searching…' : 'Execute Query' }}
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <section class="results-card" aria-label="Shipment results">
+    @if (loading()) {
+      <div class="empty-state" role="status"><p>Searching shipments…</p></div>
+    } @else if (error()) {
+      <div class="empty-state" role="alert"><p>{{ error() }}</p></div>
+    } @else if (rows().length) {
+      <div class="table-wrap">
+        <table>
+          <thead><tr>@for (column of columns; track column.key) {<th scope="col">{{ column.header }}</th>}</tr></thead>
+          <tbody>
+            @for (row of visibleRows(); track $index) {
+              <tr>
+                @for (column of columns; track column.key) {
+                  <td [class.subject]="column.key === 'Shipper' || column.key === 'Consignee'" [attr.title]="row[column.key]">
+                    @if (column.key === 'AWBNo') {
+                      <strong>{{ row.AWBNo }}</strong>
+                    } @else if (column.key === 'Status') {
+                      @if ((row.Status || '').trim(); as status) {
+                        @let delivered = status.toUpperCase() === 'POD';
+                        <span class="badge rounded-pill border d-inline-flex align-items-center gap-1 px-2 py-1"
+                          [class]="delivered ? 'bg-success-subtle text-success-emphasis border-success-subtle' : 'bg-warning-subtle text-warning-emphasis border-warning-subtle'">
+                          <i [class]="delivered ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle'" aria-hidden="true"></i>
+                          {{ delivered ? 'POD' : status }}
+                          @if (delivered) { <span class="visually-hidden">Delivered</span> }
+                        </span>
+                      } @else {
+                        —
+                      }
+                    } @else {
+                      {{ row[column.key] === '' ? '—' : (row[column.key] ?? '—') }}
+                    }
+                  </td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <footer class="table-footer">
+        <span>Showing {{ start() + 1 }}–{{ end() }} of {{ rows().length }}</span>
+        <nav aria-label="Shipment pages">
+          <button type="button" aria-label="Previous page" [disabled]="page() === 1" (click)="changePage(page() - 1)"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
+          <span class="align-self-center px-2">Page {{ page() }} of {{ totalPages() }}</span>
+          <button type="button" aria-label="Next page" [disabled]="page() === totalPages()" (click)="changePage(page() + 1)"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
+        </nav>
+      </footer>
+    } @else {
+      <div class="empty-state">
+        <div><i class="fa-solid fa-box-open" aria-hidden="true"></i></div>
+        <h3>{{ searched() ? 'No shipments found' : 'Shipment results' }}</h3>
+        <p>{{ searched() ? 'Try a different date range or shipment filter.' : 'Select a date range and run a search.' }}</p>
+      </div>
+    }
+  </section>
+</section>

@@ -539,3 +539,9 @@
   }
 
 }
+.shipment-support-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.support-action { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 34px; border: 1px solid #ecdedd; border-radius: 8px; padding: 7px 11px; background: #fff8f7; color: #9f514a; font-size: 11px; font-weight: 600; cursor: pointer; }
+.location-action { background: #f4faf6; color: #397455; border-color: #dcebe1; }
+.support-action:hover { filter: brightness(.97); }
+@media(max-width:600px) { .section-header { flex-wrap: wrap; } }
+.support-toolbar{justify-content:flex-end;margin-bottom:14px}.support-card{margin-bottom:20px}.update-card .header-line{background:#397455}.support-count{font-size:12px;padding:3px 9px;border-radius:20px;background:#f0f3f7;color:#667085}.update-card .support-count{background:#edf6f0;color:#397455}.support-empty{padding:20px;text-align:center;color:#79869a;border:1px solid var(--border-color);border-radius:12px;background:var(--background-color)}

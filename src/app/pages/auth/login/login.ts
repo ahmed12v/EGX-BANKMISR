@@ -6,6 +6,8 @@ import { finalize } from 'rxjs';
 import { StorageService } from '../../../admin/service/storgeService';
 import { LoginService } from '../../../admin/service/loginservice';
 import { CommonModule } from '@angular/common';
+import { isAllowedAccount } from '../../../core/guards/allowed-account';
+import { isCrmAccount } from '../../../core/guards/crm-guard';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,6 +42,22 @@ export class Login {
 
     if (this.loginForm.valid) {
       this.cradentionalInvalid.set('');
+      const { UserID, UserPwd } = this.loginForm.getRawValue();
+      if (isCrmAccount(UserID)) {
+        if (UserPwd !== 'CRM12345') {
+          this._storageService.removeItem('userCredentials');
+          this.cradentionalInvalid.set('Invalid Credentials');
+          return;
+        }
+        this._storageService.setItem('userCredentials', {
+          UserID: 'CRM@EGYPTEXPRESS',
+          UserName: 'CRM',
+          authSource: 'local-crm',
+          credentialsVerified: true,
+        });
+        this.route.navigate(['/dashboard']);
+        return;
+      }
       this.isLoading.set(true);
       //console.log('isLoading true')
       this._loginService
@@ -56,7 +74,7 @@ export class Login {
               this.cradentionalInvalid.set(res.Description);
             }
             if (res.Description === 'SUCCESS') {
-              if (res.UserCredentials?.CoCode?.trim().toLowerCase() !== 'dh02043') {
+              if (isCrmAccount(res.UserCredentials?.UserID) || !isAllowedAccount(res.UserCredentials?.CoCode)) {
                 this._storageService.removeItem('userCredentials');
                 this.cradentionalInvalid.set(
                   'This account is not authorized to access this portal.',

@@ -3,6 +3,7 @@ import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { StorageService } from '../../../admin/service/storgeService';
 import { awbStateService } from '../../../core/service/stats/awbstat';
+import { TrackingSession } from '../../../core/service/stats/tracking-session';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -15,8 +16,10 @@ export class Logout {
   _router = inject(Router);
   _storage = inject(StorageService);
   _abwstate = inject(awbStateService);
+  private readonly trackingSession = inject(TrackingSession);
 
   logout(): void {
+    this.trackingSession.clear();
     this._abwstate.clear();
     this._storage.removeItem('userCredentials');
     this._router.navigate(['/login']);

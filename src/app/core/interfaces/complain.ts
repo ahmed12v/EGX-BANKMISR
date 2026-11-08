@@ -6,6 +6,7 @@ export interface Complaint {
   Remarks: string;
   RootCause: string;
   Status: string;
+  StatusCode?: string;
 }
 
 export interface ComplaintResponse {
@@ -26,6 +27,7 @@ export interface ComplaintResponseParsed {
     DateTo:string,
     SqlString:string,
     UserID:string,
+    UserPwd?:string,
     AWBno:string,
     InternalStatusCode:string,
     LifecycleStatus:string,
