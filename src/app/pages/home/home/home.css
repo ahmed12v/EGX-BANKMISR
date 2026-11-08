@@ -55,7 +55,7 @@
 .portal-user { display: flex; align-items: center; gap: 8px; min-width: 0; padding: 4px 12px 4px 4px; border: 1px solid #ffe0ce; border-radius: 999px; background: #fff7f1; }
 .portal-user-icon { display: grid; place-items: center; flex: 0 0 28px; height: 28px; border-radius: 50%; background: #ffeadc; color: var(--primary-color-dark); font-size: 12px; }
 .portal-user-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-primary); font-size: 12px; font-weight: 700; }
-.portal-brand .nav-express-logo { filter: brightness(0); }
+.portal-brand .nav-express-logo { object-fit: contain; }
 .portal-header .nav-centered-bank {
   width: 140px;
   height: 60px;
